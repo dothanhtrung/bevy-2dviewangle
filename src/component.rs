@@ -3,7 +3,7 @@ use bevy::prelude::{Component, Deref, DerefMut, Entity, Event};
 use bevy::sprite::TextureAtlas;
 use std::collections::HashMap;
 
-#[derive(Default, Clone, Copy)]
+#[derive(Default, Clone, Copy, Eq, PartialEq)]
 pub enum ViewDirection {
     #[default]
     Front,
@@ -42,7 +42,7 @@ pub struct TextureViewCollections {
 #[derive(Component, Default, Deref, DerefMut)]
 pub struct Direction(ViewDirection);
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct ActionDirection {
     pub direction: ViewDirection,
     pub action: u8,
@@ -50,13 +50,6 @@ pub struct ActionDirection {
 }
 
 #[derive(Event)]
-pub struct DirectionChanged {
-    pub direction: ViewDirection,
-    pub entity: Entity,
-}
-
-#[derive(Event)]
-pub struct ActionChanged {
-    pub action: u8,
+pub struct ViewChanged {
     pub entity: Entity,
 }

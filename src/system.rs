@@ -7,23 +7,15 @@ use crate::component::*;
 
 #[cfg(feature = "3d")]
 pub fn texture_event_3d(
-    mut direction_events: EventReader<DirectionChanged>,
-    mut act_events: EventReader<ActionChanged>,
+    mut events: EventReader<ViewChanged>,
     mut sprites: Query<(&mut ActionDirection, &mut Handle<StandardMaterial>)>,
     mut mats: ResMut<Assets<StandardMaterial>>,
     atlases: Res<Assets<TextureAtlas>>,
 ) {
     let mut entities = Vec::new();
-    for event in direction_events.iter() {
-        if let Ok(mut e) = sprites.get_mut(event.entity) {
-            e.0.direction = event.direction;
-            entities.push(event.entity);
-        }
-    }
 
-    for event in act_events.iter() {
+    for event in events.iter() {
         if let Ok(mut e) = sprites.get_mut(event.entity) {
-            e.0.action = event.action;
             entities.push(event.entity);
         }
     }
