@@ -1,5 +1,5 @@
 [package]
-name = "bevy-2dviewangle"
+name = "bevy_2dviewangle"
 version = "0.0.1"
 authors = ["Trung Do <dothanhtrung@pm.me"]
 edition = "2021"

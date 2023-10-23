@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::asset::{Assets, Handle};
+use bevy::pbr::StandardMaterial;
+use bevy::prelude::{EventReader, Query, Res, ResMut};
+use bevy::sprite::TextureAtlas;
 
 use crate::component::*;
 

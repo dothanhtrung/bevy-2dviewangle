@@ -1,9 +1,9 @@
-use bevy::prelude::*;
-
-use system::*;
+use bevy::app::{App, Plugin, Update};
 
 mod component;
 mod system;
+
+use system::*;
 
 pub struct View2DAnglePlugin;
 
