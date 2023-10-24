@@ -1,10 +1,10 @@
 use bevy::app::{App, Plugin, Update};
 
-mod component;
-mod system;
-
 pub use component::*;
 use system::*;
+
+mod component;
+mod system;
 
 pub struct View2DAnglePlugin;
 
@@ -13,6 +13,7 @@ impl Plugin for View2DAnglePlugin {
         app.add_event::<ViewChanged>();
 
         #[cfg(feature = "3d")]
-        app.add_systems(Update, texture_event_3d);
+        app.add_systems(Update, texture_event_3d)
+            .insert_resource(Animation2D::default());
     }
 }

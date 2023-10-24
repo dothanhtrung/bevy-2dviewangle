@@ -8,14 +8,15 @@ use crate::component::*;
 #[cfg(feature = "3d")]
 pub fn texture_event_3d(
     mut events: EventReader<ViewChanged>,
-    mut sprites: Query<(&mut ActionDirection, &mut Handle<StandardMaterial>)>,
+    mut sprites: Query<(&mut ActorView, &mut Handle<StandardMaterial>)>,
     mut mats: ResMut<Assets<StandardMaterial>>,
     atlases: Res<Assets<TextureAtlas>>,
+    animation2d: Res<Animation2D>,
 ) {
     let mut entities = Vec::new();
 
     for event in events.iter() {
-        if let Ok(mut e) = sprites.get_mut(event.entity) {
+        if let Ok(_) = sprites.get_mut(event.entity) {
             entities.push(event.entity);
         }
     }
@@ -25,14 +26,14 @@ pub fn texture_event_3d(
             let mut material = mats.get_mut(&e.1).unwrap();
             let action = e.0.action;
             let atlas = match e.0.direction {
-                ViewDirection::Front => &e.0.animation[&action].front,
-                ViewDirection::Back => &e.0.animation[&action].back,
-                ViewDirection::Left => &e.0.animation[&action].left,
-                ViewDirection::Right => &e.0.animation[&action].right,
-                ViewDirection::FrontLeft => &e.0.animation[&action].front_left,
-                ViewDirection::FrontRight => &e.0.animation[&action].front_right,
-                ViewDirection::BackLeft => &e.0.animation[&action].back_left,
-                ViewDirection::BackRight => &e.0.animation[&action].back_right,
+                ViewDirection::Front => &animation2d[&e.0.actor][&action].front,
+                ViewDirection::Back => &animation2d[&e.0.actor][&action].back,
+                ViewDirection::Left => &animation2d[&e.0.actor][&action].left,
+                ViewDirection::Right => &animation2d[&e.0.actor][&action].right,
+                ViewDirection::FrontLeft => &animation2d[&e.0.actor][&action].front_left,
+                ViewDirection::FrontRight => &animation2d[&e.0.actor][&action].front_right,
+                ViewDirection::BackLeft => &animation2d[&e.0.actor][&action].back_left,
+                ViewDirection::BackRight => &animation2d[&e.0.actor][&action].back_right,
             };
             if let Some(atlas) = atlas {
                 if let Some(atlas) = atlases.get(atlas) {

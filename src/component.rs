@@ -1,5 +1,5 @@
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, Event};
+use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Resource};
 use bevy::sprite::TextureAtlas;
 use std::collections::HashMap;
 
@@ -28,26 +28,23 @@ pub struct TextureViewCollections {
     pub back_right: Option<Handle<TextureAtlas>>,
 }
 
-// pub trait Animation2D {
-//     fn front(&self) -> Some(Handle<TextureAtlas>);
-//     fn back(&self) -> Some(Handle<TextureAtlas>);
-//     fn left(&self) -> Some(Handle<TextureAtlas>);
-//     fn right(&self) -> Some(Handle<TextureAtlas>);
-//     fn front_left(&self) -> Some(Handle<TextureAtlas>);
-//     fn front_right(&self) -> Some(Handle<TextureAtlas>);
-//     fn back_right(&self) -> Some(Handle<TextureAtlas>);
-//     fn back_left(&self) -> Some(Handle<TextureAtlas>);
-// }
-
 #[derive(Component, Default, Deref, DerefMut)]
 pub struct Direction(ViewDirection);
 
 #[derive(Component, Default)]
-pub struct ActionDirection {
+pub struct Dynamic2DView {
     pub direction: ViewDirection,
-    pub action: u8,
-    pub animation: HashMap<u8, TextureViewCollections>,
+    pub action: u16,
+    pub actor: u64,
 }
+
+#[derive(Component, Default)]
+pub struct Static2DView {
+    pub actor: u64,
+}
+
+#[derive(Resource, Deref, DerefMut, Default)]
+pub struct Animation2D(HashMap<u64, HashMap<u16, TextureViewCollections>>);
 
 #[derive(Event)]
 pub struct ViewChanged {
