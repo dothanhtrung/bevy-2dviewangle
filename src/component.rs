@@ -36,6 +36,7 @@ pub struct Dynamic2DView {
     pub direction: ViewDirection,
     pub action: u16,
     pub actor: u64,
+    pub flipped: bool,
 }
 
 #[derive(Component, Default)]
