@@ -1,6 +1,5 @@
 use bevy::asset::{Assets, Handle};
-use bevy::pbr::StandardMaterial;
-use bevy::prelude::{EventReader, Query, Res, ResMut, Transform};
+use bevy::prelude::{EventReader, Query, Res, ResMut, StandardMaterial, Transform};
 use bevy::sprite::TextureAtlas;
 
 use crate::component::*;
@@ -8,11 +7,7 @@ use crate::component::*;
 #[cfg(feature = "3d")]
 pub fn texture_event_3d(
     mut events: EventReader<ViewChanged>,
-    mut sprites: Query<(
-        &mut Dynamic2DView,
-        &mut Handle<StandardMaterial>,
-        &mut Transform,
-    )>,
+    mut sprites: Query<(&mut Dynamic2DView, &mut Handle<StandardMaterial>, &mut Transform)>,
     mut mats: ResMut<Assets<StandardMaterial>>,
     atlases: Res<Assets<TextureAtlas>>,
     animation2d: Res<Animation2D>,
@@ -23,7 +18,7 @@ pub fn texture_event_3d(
             let mat = s.1;
             let mut transform = s.2;
 
-            let mut material = mats.get_mut(&mat).unwrap();
+            let mut material = mats.get_mut(&*mat).unwrap();
             let action = view.action;
             let atlas = match view.direction {
                 ViewDirection::Front => &animation2d[&view.actor][&action].front,
@@ -45,9 +40,7 @@ pub fn texture_event_3d(
                 if let Some(atlas) = atlases.get(atlas) {
                     material.base_color_texture = Some(atlas.texture.clone());
                 }
-            } else if let Some(atlas) =
-                get_opposite_view(&animation2d[&view.actor][&action], view.direction)
-            {
+            } else if let Some(atlas) = get_opposite_view(&animation2d[&view.actor][&action], view.direction) {
                 if let Some(atlas) = atlases.get(atlas) {
                     material.base_color_texture = Some(atlas.texture.clone());
                 }
@@ -59,10 +52,7 @@ pub fn texture_event_3d(
     }
 }
 
-fn get_opposite_view(
-    texture: &TextureViewCollections,
-    direction: ViewDirection,
-) -> &Option<Handle<TextureAtlas>> {
+fn get_opposite_view(texture: &TextureViewCollections, direction: ViewDirection) -> &Option<Handle<TextureAtlas>> {
     match direction {
         ViewDirection::Left => &texture.right,
         ViewDirection::Right => &texture.left,
