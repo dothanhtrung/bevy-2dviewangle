@@ -1,3 +1,5 @@
+// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+
 use bevy::asset::Handle;
 use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Resource};
 use bevy::sprite::TextureAtlas;

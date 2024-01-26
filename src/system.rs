@@ -1,26 +1,31 @@
+// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+
 use bevy::asset::{Assets, Handle};
 use bevy::prelude::{EventReader, Query, Res, ResMut, StandardMaterial, Transform};
 use bevy::sprite::TextureAtlas;
 
 use crate::component::*;
 
-#[cfg(feature = "3d")]
-pub fn texture_event_3d(
+pub fn view_changed_event(
     mut events: EventReader<ViewChanged>,
-    mut sprites: Query<(&mut Dynamic2DView, &mut Handle<StandardMaterial>, &mut Transform)>,
+    mut sprites: Query<(
+        &mut Dynamic2DView,
+        &mut Transform,
+        Option<&Handle<StandardMaterial>>,
+        Option<&mut Handle<TextureAtlas>>,
+    )>,
+    #[cfg(feature = "3d")]
     mut mats: ResMut<Assets<StandardMaterial>>,
     atlases: Res<Assets<TextureAtlas>>,
     animation2d: Res<Animation2D>,
 ) {
-    for event in events.iter() {
+    for event in events.read() {
         if let Ok(s) = sprites.get_mut(event.entity) {
             let mut view = s.0;
-            let mat = s.1;
-            let mut transform = s.2;
+            let mut transform = s.1;
 
-            let mut material = mats.get_mut(&*mat).unwrap();
             let action = view.action;
-            let atlas = match view.direction {
+            let mut atlas = match view.direction {
                 ViewDirection::Front => &animation2d[&view.actor][&action].front,
                 ViewDirection::Back => &animation2d[&view.actor][&action].back,
                 ViewDirection::Left => &animation2d[&view.actor][&action].left,
@@ -36,23 +41,34 @@ pub fn texture_event_3d(
                 view.flipped = false;
             }
 
-            if let Some(atlas) = atlas {
-                if let Some(atlas) = atlases.get(atlas) {
-                    material.base_color_texture = Some(atlas.texture.clone());
+            if atlas.is_none() {
+                atlas = get_opposite_view(&animation2d[&view.actor][&action], view.direction);
+                if atlas.is_some() {
+                    transform.rotate_y(std::f64::consts::PI as f32);
+                    view.flipped = true;
                 }
-            } else if let Some(atlas) = get_opposite_view(&animation2d[&view.actor][&action], view.direction) {
-                if let Some(atlas) = atlases.get(atlas) {
-                    material.base_color_texture = Some(atlas.texture.clone());
-                }
+            }
 
-                transform.rotate_y(std::f64::consts::PI as f32);
-                view.flipped = true;
+            #[cfg(feature = "3d")]
+            if let (Some(mat), Some(atlas)) = (s.2, atlas) {
+                let material = mats.get_mut(&*mat).unwrap();
+                if let Some(atlas) = atlases.get(atlas) {
+                    material.base_color_texture = Some(atlas.texture.clone());
+                }
+            }
+
+            #[cfg(feature = "2d")]
+            if let (Some(mut handle), Some(atlas)) = (s.3, atlas) {
+                *handle = atlas.clone();
             }
         }
     }
 }
 
-fn get_opposite_view(texture: &TextureViewCollections, direction: ViewDirection) -> &Option<Handle<TextureAtlas>> {
+fn get_opposite_view(
+    texture: &TextureViewCollections,
+    direction: ViewDirection,
+) -> &Option<Handle<TextureAtlas>> {
     match direction {
         ViewDirection::Left => &texture.right,
         ViewDirection::Right => &texture.left,
