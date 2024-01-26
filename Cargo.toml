@@ -4,6 +4,9 @@ version = "0.0.3"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
+repository = "https://gitlab.com/kimtinh/bevy-2dviewangle"
+keywords = ["bevy"]
+description = "Bevy plugin to switch texture base on view angles"
 
 [dependencies]
 bevy = { version = "0.12", features = ["bevy_asset"] }
