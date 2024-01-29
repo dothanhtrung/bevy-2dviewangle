@@ -26,14 +26,14 @@ pub fn view_changed_event(
 
             let action = view.action;
             let mut atlas = match view.direction {
-                ViewDirection::Front => &animation2d[&view.actor][&action].front,
-                ViewDirection::Back => &animation2d[&view.actor][&action].back,
-                ViewDirection::Left => &animation2d[&view.actor][&action].left,
-                ViewDirection::Right => &animation2d[&view.actor][&action].right,
-                ViewDirection::FrontLeft => &animation2d[&view.actor][&action].front_left,
-                ViewDirection::FrontRight => &animation2d[&view.actor][&action].front_right,
-                ViewDirection::BackLeft => &animation2d[&view.actor][&action].back_left,
-                ViewDirection::BackRight => &animation2d[&view.actor][&action].back_right,
+                ViewAngle::Front => &animation2d[&view.actor][&action].front,
+                ViewAngle::Back => &animation2d[&view.actor][&action].back,
+                ViewAngle::Left => &animation2d[&view.actor][&action].left,
+                ViewAngle::Right => &animation2d[&view.actor][&action].right,
+                ViewAngle::FrontLeft => &animation2d[&view.actor][&action].front_left,
+                ViewAngle::FrontRight => &animation2d[&view.actor][&action].front_right,
+                ViewAngle::BackLeft => &animation2d[&view.actor][&action].back_left,
+                ViewAngle::BackRight => &animation2d[&view.actor][&action].back_right,
             };
 
             if view.flipped {
@@ -67,15 +67,15 @@ pub fn view_changed_event(
 
 fn get_opposite_view(
     texture: &TextureViewCollections,
-    direction: ViewDirection,
+    direction: ViewAngle,
 ) -> &Option<Handle<TextureAtlas>> {
     match direction {
-        ViewDirection::Left => &texture.right,
-        ViewDirection::Right => &texture.left,
-        ViewDirection::FrontLeft => &texture.front_right,
-        ViewDirection::FrontRight => &texture.front_left,
-        ViewDirection::BackLeft => &texture.back_right,
-        ViewDirection::BackRight => &texture.back_left,
+        ViewAngle::Left => &texture.right,
+        ViewAngle::Right => &texture.left,
+        ViewAngle::FrontLeft => &texture.front_right,
+        ViewAngle::FrontRight => &texture.front_left,
+        ViewAngle::BackLeft => &texture.back_right,
+        ViewAngle::BackRight => &texture.back_left,
         _ => &None,
     }
 }

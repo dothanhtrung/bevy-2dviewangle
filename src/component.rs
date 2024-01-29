@@ -6,7 +6,7 @@ use bevy::sprite::TextureAtlas;
 use std::collections::HashMap;
 
 #[derive(Default, Clone, Copy, Eq, PartialEq)]
-pub enum ViewDirection {
+pub enum ViewAngle {
     #[default]
     Front,
     Back,
@@ -31,11 +31,11 @@ pub struct TextureViewCollections {
 }
 
 #[derive(Component, Default, Deref, DerefMut)]
-pub struct Direction(ViewDirection);
+pub struct Direction(ViewAngle);
 
 #[derive(Component, Default)]
 pub struct Dynamic2DView {
-    pub direction: ViewDirection,
+    pub direction: ViewAngle,
     pub action: u16,
     pub actor: u64,
     pub flipped: bool,

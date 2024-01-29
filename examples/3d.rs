@@ -2,20 +2,20 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_2dviewangle::{
     Animation2D, Dynamic2DView, TextureViewCollections, View2DAnglePlugin, ViewChanged,
-    ViewDirection,
+    ViewAngle,
 };
 use bevy_sprite3d::{AtlasSprite3d, AtlasSprite3dComponent, Sprite3dParams, Sprite3dPlugin};
 use std::collections::HashMap;
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]
-enum ACTOR {
+enum Actor {
     Frog,
 }
 
 // Each actor may have many actions: idle, walk, run, fight, ...
 #[repr(u16)]
-enum ACTION {
+enum Action {
     Idle,
 }
 
@@ -37,7 +37,7 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: String::from("3D demo"),
-                        resolution: WindowResolution::new(512., 512.),
+                        resolution: WindowResolution::new(256., 256.),
                         ..default()
                     }),
                     ..default()
@@ -76,9 +76,9 @@ fn load_texture(
 
     // Add handles of different views to plugin's resource
     animation2d.insert(
-        ACTOR::Frog as u64,
+        Actor::Frog as u64,
         HashMap::from([(
-            ACTION::Idle as u16,
+            Action::Idle as u16,
             TextureViewCollections {
                 front: Some(front_handle),
                 back: Some(back_handle),
@@ -96,9 +96,9 @@ fn setup(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let front_handle = animation2d
-        .get(&(ACTOR::Frog as u64))
+        .get(&(Actor::Frog as u64))
         .unwrap()
-        .get(&(ACTION::Idle as u16))
+        .get(&(Action::Idle as u16))
         .unwrap()
         .front
         .as_ref()
@@ -110,16 +110,16 @@ fn setup(
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
-            intensity: 3000.0,
+            intensity: 5000.0,
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform::from_xyz(4.0, 10.0, 4.0),
+        transform: Transform::from_xyz(4., 10., 4.),
         ..default()
     });
     // camera
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0., 2.5, 3.).looking_at(Vec3::Y, Vec3::Y),
         ..default()
     });
     // plane
@@ -134,10 +134,10 @@ fn setup(
     commands.spawn((
         AtlasSprite3d {
             atlas: front_handle,
-            pixels_per_metre: 16.,
+            pixels_per_metre: 8.,
             index: 0,
             transform: Transform {
-                translation: Vec3::new(0., 0.5, 0.),
+                translation: Vec3::new(0., 0.85, 0.),
                 ..default()
             },
             ..default()
@@ -146,7 +146,7 @@ fn setup(
         AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
         // Specify actor for entity
         Dynamic2DView {
-            actor: ACTOR::Frog as u64,
+            actor: Actor::Frog as u64,
             ..default()
         },
     ));
@@ -175,17 +175,17 @@ fn input(
 
         // Update action and direction of actor
         if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Left;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Left;
         } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Right;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Right;
         } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Back;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Back;
         } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Front;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Front;
         }
 
         if action != act.action || direction != act.direction {

@@ -2,19 +2,19 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_2dviewangle::{
     Animation2D, Dynamic2DView, TextureViewCollections, View2DAnglePlugin, ViewChanged,
-    ViewDirection,
+    ViewAngle,
 };
 use std::collections::HashMap;
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]
-enum ACTOR {
+enum Actor {
     Frog,
 }
 
 // Each actor may have many actions: idle, walk, run, fight, ...
 #[repr(u16)]
-enum ACTION {
+enum Action {
     Idle,
 }
 
@@ -64,9 +64,9 @@ fn setup(
 
     // Add handles of different views to plugin's resource
     animation2d.insert(
-        ACTOR::Frog as u64,
+        Actor::Frog as u64,
         HashMap::from([(
-            ACTION::Idle as u16,
+            Action::Idle as u16,
             TextureViewCollections {
                 front: Some(front_handle.clone()),
                 back: Some(back_handle.clone()),
@@ -87,7 +87,7 @@ fn setup(
         AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
         // Specify actor for entity
         Dynamic2DView {
-            actor: ACTOR::Frog as u64,
+            actor: Actor::Frog as u64,
             ..default()
         },
     ));
@@ -116,17 +116,17 @@ fn input(
 
         // Update action and direction of actor
         if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Left;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Left;
         } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Right;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Right;
         } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Back;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Back;
         } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
-            action = ACTION::Idle as u16;
-            direction = ViewDirection::Front;
+            action = Action::Idle as u16;
+            direction = ViewAngle::Front;
         }
 
         if action != act.action || direction != act.direction {
