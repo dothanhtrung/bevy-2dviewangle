@@ -17,12 +17,9 @@ Examples
 
 ### 2d
 
-```rust
-
-```
+[2d example](./examples/2d.rs)
 
 ### 3d
 
-```rust
+[3d example](./examples/3d.rs)
 
-```
