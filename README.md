@@ -1,7 +1,7 @@
 bevy_2dviewangle
 ================
 
-Bevy plugin to switch texture base on view angles. Currently, support 8 view angles:
+Bevy plugin to easier to switch texture base on view angles. Currently, support 8 view angles:
 
 * front
 * back
@@ -17,9 +17,12 @@ Examples
 
 ### 2d
 
+![2d demo](https://i.imgur.com/7fRkkg3.mp4)
+
 [2d example](./examples/2d.rs)
 
 ### 3d
 
-[3d example](./examples/3d.rs)
+![3d demo](https://i.imgur.com/i3JnW9K.mp4)
 
+[3d example](./examples/3d.rs)
