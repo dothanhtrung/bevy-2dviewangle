@@ -11,10 +11,11 @@ exclude = ["assets", "examples"]
 
 [dependencies]
 bevy = { version = "0.12", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+bevy_sprite3d = { version = "2.7.0", optional = true }
 
 [features]
 default = ["2d", "3d"]
-3d = []
+3d = ["dep:bevy_sprite3d"]
 2d = []
 
 [dev-dependencies]

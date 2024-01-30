@@ -1,12 +1,12 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Resource};
+use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Resource, Timer};
 use bevy::sprite::TextureAtlas;
 use std::collections::HashMap;
 
 #[derive(Default, Clone, Copy, Eq, PartialEq)]
-pub enum ViewAngle {
+pub enum Angle {
     #[default]
     Front,
     Back,
@@ -19,7 +19,7 @@ pub enum ViewAngle {
 }
 
 #[derive(Default)]
-pub struct TextureViewCollections {
+pub struct ViewTextures {
     pub front: Option<Handle<TextureAtlas>>,
     pub back: Option<Handle<TextureAtlas>>,
     pub left: Option<Handle<TextureAtlas>>,
@@ -30,24 +30,17 @@ pub struct TextureViewCollections {
     pub back_right: Option<Handle<TextureAtlas>>,
 }
 
-#[derive(Component, Default, Deref, DerefMut)]
-pub struct Direction(ViewAngle);
-
 #[derive(Component, Default)]
-pub struct Dynamic2DView {
-    pub direction: ViewAngle,
+pub struct DynamicActor {
+    pub angle: Angle,
     pub action: u16,
     pub actor: u64,
     pub flipped: bool,
-}
-
-#[derive(Component, Default)]
-pub struct Static2DView {
-    pub actor: u64,
+    pub animation_timer: Timer,
 }
 
 #[derive(Resource, Deref, DerefMut, Default)]
-pub struct Animation2D(HashMap<u64, HashMap<u16, TextureViewCollections>>);
+pub struct ActorsTextures(HashMap<u64, HashMap<u16, ViewTextures>>);
 
 #[derive(Event)]
 pub struct ViewChanged {

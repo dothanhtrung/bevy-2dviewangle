@@ -12,9 +12,8 @@ pub struct View2DAnglePlugin;
 
 impl Plugin for View2DAnglePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<ViewChanged>();
-
-        app.add_systems(Update, view_changed_event)
-            .insert_resource(Animation2D::default());
+        app.add_event::<ViewChanged>()
+            .add_systems(Update, (view_changed_event, dynamic_actor_animate))
+            .insert_resource(ActorsTextures::default());
     }
 }

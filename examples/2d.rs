@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+
 use bevy_2dviewangle::{
-    Animation2D, Dynamic2DView, TextureViewCollections, View2DAnglePlugin, ViewChanged,
-    ViewAngle,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged,
+    ViewTextures,
 };
-use std::collections::HashMap;
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]
@@ -17,11 +19,6 @@ enum Actor {
 enum Action {
     Idle,
 }
-
-const SPRITE_LEN: usize = 3;
-
-#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
 
 fn main() {
     App::new()
@@ -40,7 +37,7 @@ fn main() {
         // Add the plugin
         .add_plugins(View2DAnglePlugin)
         .add_systems(Startup, setup)
-        .add_systems(Update, (animate_sprite, input))
+        .add_systems(Update, input)
         .run();
 }
 
@@ -48,7 +45,7 @@ fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut animation2d: ResMut<Animation2D>,
+    mut animation2d: ResMut<ActorsTextures>,
 ) {
     let front_image = asset_server.load("frog_idle_front.png");
     let back_image = asset_server.load("frog_idle_back.png");
@@ -67,7 +64,7 @@ fn setup(
         Actor::Frog as u64,
         HashMap::from([(
             Action::Idle as u16,
-            TextureViewCollections {
+            ViewTextures {
                 front: Some(front_handle.clone()),
                 back: Some(back_handle.clone()),
                 left: Some(left_handle.clone()),
@@ -84,54 +81,42 @@ fn setup(
             transform: Transform::from_scale(Vec3::splat(10.)),
             ..default()
         },
-        AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
         // Specify actor for entity
-        Dynamic2DView {
+        DynamicActor {
             actor: Actor::Frog as u64,
+            animation_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
             ..default()
         },
     ));
 }
 
-fn animate_sprite(
-    time: Res<Time>,
-    mut query: Query<(&mut AnimationTimer, &mut TextureAtlasSprite)>,
-) {
-    for (mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
-        if timer.just_finished() {
-            sprite.index = (sprite.index + 1) % SPRITE_LEN;
-        }
-    }
-}
-
 fn input(
     kb_input: Res<Input<KeyCode>>,
-    mut actors: Query<(&mut Dynamic2DView, Entity)>,
+    mut actors: Query<(&mut DynamicActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;
-        let mut direction = act.direction;
+        let mut direction = act.angle;
 
         // Update action and direction of actor
         if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Left;
+            direction = Angle::Left;
         } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Right;
+            direction = Angle::Right;
         } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Back;
+            direction = Angle::Back;
         } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Front;
+            direction = Angle::Front;
         }
 
-        if action != act.action || direction != act.direction {
+        if action != act.action || direction != act.angle {
             act.action = action;
-            act.direction = direction;
+            act.angle = direction;
             // Send event to change to another sprite sheet of another view
             action_event.send(ViewChanged { entity: e });
         }

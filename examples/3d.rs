@@ -1,11 +1,13 @@
+use std::collections::HashMap;
+
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy_sprite3d::{AtlasSprite3d, Sprite3dParams, Sprite3dPlugin};
+
 use bevy_2dviewangle::{
-    Animation2D, Dynamic2DView, TextureViewCollections, View2DAnglePlugin, ViewChanged,
-    ViewAngle,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged,
+    ViewTextures,
 };
-use bevy_sprite3d::{AtlasSprite3d, AtlasSprite3dComponent, Sprite3dParams, Sprite3dPlugin};
-use std::collections::HashMap;
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]
@@ -25,9 +27,6 @@ enum GameState {
     Loading,
     Ready,
 }
-
-#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
 
 fn main() {
     App::new()
@@ -51,14 +50,14 @@ fn main() {
         .add_systems(Update, setup.run_if(in_state(GameState::Loading)))
         .add_systems(
             Update,
-            (animate_sprite, input).run_if(in_state(GameState::Ready)),
+            input.run_if(in_state(GameState::Ready)),
         )
         .run();
 }
 
 fn load_texture(
     asset_server: Res<AssetServer>,
-    mut animation2d: ResMut<Animation2D>,
+    mut animation2d: ResMut<ActorsTextures>,
     mut atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let front_image = asset_server.load("frog_idle_front.png");
@@ -79,7 +78,7 @@ fn load_texture(
         Actor::Frog as u64,
         HashMap::from([(
             Action::Idle as u16,
-            TextureViewCollections {
+            ViewTextures {
                 front: Some(front_handle),
                 back: Some(back_handle),
                 left: Some(left_handle),
@@ -91,7 +90,7 @@ fn load_texture(
 
 fn setup(
     mut commands: Commands,
-    animation2d: Res<Animation2D>,
+    animation2d: Res<ActorsTextures>,
     mut sprite3d_params: Sprite3dParams,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
@@ -142,55 +141,43 @@ fn setup(
             },
             ..default()
         }
-        .bundle(&mut sprite3d_params),
-        AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
+            .bundle(&mut sprite3d_params),
         // Specify actor for entity
-        Dynamic2DView {
+        DynamicActor {
             actor: Actor::Frog as u64,
+            animation_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
             ..default()
         },
     ));
 }
 
-fn animate_sprite(
-    time: Res<Time>,
-    mut query: Query<(&mut AnimationTimer, &mut AtlasSprite3dComponent)>,
-) {
-    for (mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
-        if timer.just_finished() {
-            sprite.index = (sprite.index + 1) % sprite.atlas.len();
-        }
-    }
-}
-
 fn input(
     kb_input: Res<Input<KeyCode>>,
-    mut actors: Query<(&mut Dynamic2DView, Entity)>,
+    mut actors: Query<(&mut DynamicActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;
-        let mut direction = act.direction;
+        let mut direction = act.angle;
 
         // Update action and direction of actor
         if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Left;
+            direction = Angle::Left;
         } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Right;
+            direction = Angle::Right;
         } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Back;
+            direction = Angle::Back;
         } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
             action = Action::Idle as u16;
-            direction = ViewAngle::Front;
+            direction = Angle::Front;
         }
 
-        if action != act.action || direction != act.direction {
+        if action != act.action || direction != act.angle {
             act.action = action;
-            act.direction = direction;
+            act.angle = direction;
             // Send event to change to another sprite sheet of another view
             action_event.send(ViewChanged { entity: e });
         }
