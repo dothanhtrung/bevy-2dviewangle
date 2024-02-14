@@ -4,8 +4,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged,
-    ViewTextures,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewTextures,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -84,7 +83,7 @@ fn setup(
         // Specify actor for entity
         DynamicActor {
             actor: Actor::Frog as u64,
-            animation_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
+            animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
     ));

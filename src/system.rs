@@ -1,7 +1,9 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::{Assets, Handle};
-use bevy::prelude::{EventReader, Query, Res, ResMut, StandardMaterial, TextureAtlasSprite, Time, Transform};
+use bevy::prelude::{
+    EventReader, Query, Res, ResMut, StandardMaterial, TextureAtlasSprite, Time, Transform,
+};
 use bevy::sprite::TextureAtlas;
 use bevy_sprite3d::AtlasSprite3dComponent;
 
@@ -66,10 +68,7 @@ pub fn view_changed_event(
     }
 }
 
-fn get_opposite_view(
-    texture: &ViewTextures,
-    direction: Angle,
-) -> &Option<Handle<TextureAtlas>> {
+fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> &Option<Handle<TextureAtlas>> {
     match direction {
         Angle::Left => &texture.right,
         Angle::Right => &texture.left,
@@ -82,22 +81,30 @@ fn get_opposite_view(
 }
 
 pub fn dynamic_actor_animate(
-    time: Res<Time>,atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(&mut DynamicActor, Option<&mut AtlasSprite3dComponent>, Option<&mut TextureAtlasSprite>, Option<&Handle<TextureAtlas>>,)>,
+    time: Res<Time>,
+    atlases: Res<Assets<TextureAtlas>>,
+    mut query: Query<(
+        &mut DynamicActor,
+        Option<&mut AtlasSprite3dComponent>,
+        Option<&mut TextureAtlasSprite>,
+        Option<&Handle<TextureAtlas>>,
+    )>,
 ) {
-    for (mut actor,  sprite3d,  sprite2d, atlas_handle) in &mut query {
-        actor.animation_timer.tick(time.delta());
-        if actor.animation_timer.just_finished() {
-            #[cfg(feature = "3d")]
-            if let Some(mut sprite) = sprite3d {
-                sprite.index = (sprite.index + 1) % sprite.atlas.len();
-            }
+    for (mut actor, sprite3d, sprite2d, atlas_handle) in &mut query {
+        if let Some(ref mut animation_timer) = actor.animation_timer {
+            animation_timer.tick(time.delta());
+            if animation_timer.just_finished() {
+                #[cfg(feature = "3d")]
+                if let Some(mut sprite) = sprite3d {
+                    sprite.index = (sprite.index + 1) % sprite.atlas.len();
+                }
 
-            #[cfg(feature = "2d")]
-            if let (Some(mut sprite), Some(atlas_handle)) = (sprite2d, atlas_handle) {
-                if let Some(atlas) = atlases.get(atlas_handle) {
-                    let len = atlas.textures.len();
-                    sprite.index = (sprite.index + 1) % len;
+                #[cfg(feature = "2d")]
+                if let (Some(mut sprite), Some(atlas_handle)) = (sprite2d, atlas_handle) {
+                    if let Some(atlas) = atlases.get(atlas_handle) {
+                        let len = atlas.textures.len();
+                        sprite.index = (sprite.index + 1) % len;
+                    }
                 }
             }
         }

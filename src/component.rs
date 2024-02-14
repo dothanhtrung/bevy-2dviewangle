@@ -36,7 +36,7 @@ pub struct DynamicActor {
     pub action: u16,
     pub actor: u64,
     pub flipped: bool,
-    pub animation_timer: Timer,
+    pub animation_timer: Option<Timer>,
 }
 
 #[derive(Resource, Deref, DerefMut, Default)]

@@ -5,8 +5,7 @@ use bevy::window::WindowResolution;
 use bevy_sprite3d::{AtlasSprite3d, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged,
-    ViewTextures,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewTextures,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -48,10 +47,7 @@ fn main() {
         .add_state::<GameState>()
         .add_systems(Startup, load_texture)
         .add_systems(Update, setup.run_if(in_state(GameState::Loading)))
-        .add_systems(
-            Update,
-            input.run_if(in_state(GameState::Ready)),
-        )
+        .add_systems(Update, input.run_if(in_state(GameState::Ready)))
         .run();
 }
 
@@ -141,11 +137,11 @@ fn setup(
             },
             ..default()
         }
-            .bundle(&mut sprite3d_params),
+        .bundle(&mut sprite3d_params),
         // Specify actor for entity
         DynamicActor {
             actor: Actor::Frog as u64,
-            animation_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
+            animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
     ));
