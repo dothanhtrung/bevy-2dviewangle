@@ -26,3 +26,10 @@ Examples
 ![3d demo](https://i.imgur.com/i3JnW9K.mp4)
 
 [3d example](./examples/3d.rs)
+
+## Compatible Bevy Versions
+
+| bevy  | bevy_2dviewangle |
+|-------|------------------|
+| 0.12  | branch `master`  |
+| 0.12  | 0.0.5            |
