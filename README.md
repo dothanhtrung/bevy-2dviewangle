@@ -32,4 +32,4 @@ Examples
 | bevy  | bevy_2dviewangle |
 |-------|------------------|
 | 0.12  | branch `master`  |
-| 0.12  | 0.0.5            |
+| 0.12  | 0.1.0            |
