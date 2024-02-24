@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewTextures,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewSprite, ViewTextures,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -43,16 +43,16 @@ fn main() {
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     mut animation2d: ResMut<ActorsTextures>,
 ) {
     let front_image = asset_server.load("frog_idle_front.png");
     let back_image = asset_server.load("frog_idle_back.png");
     let left_image = asset_server.load("frog_idle_left.png");
 
-    let front_atlas = TextureAtlas::from_grid(front_image, Vec2::new(16., 16.), 1, 3, None, None);
-    let back_atlas = TextureAtlas::from_grid(back_image, Vec2::new(16., 16.), 1, 3, None, None);
-    let left_atlas = TextureAtlas::from_grid(left_image, Vec2::new(16., 16.), 1, 3, None, None);
+    let front_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let back_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let left_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
 
     let front_handle = texture_atlases.add(front_atlas);
     let back_handle = texture_atlases.add(back_atlas);
@@ -64,9 +64,18 @@ fn setup(
         HashMap::from([(
             Action::Idle as u16,
             ViewTextures {
-                front: Some(front_handle.clone()),
-                back: Some(back_handle.clone()),
-                left: Some(left_handle.clone()),
+                front: Some(ViewSprite {
+                    layout: front_handle.clone(),
+                    image: front_image.clone(),
+                }),
+                back: Some(ViewSprite {
+                    layout: back_handle,
+                    image: back_image,
+                }),
+                left: Some(ViewSprite {
+                    layout: left_handle,
+                    image: left_image,
+                }),
                 ..default()
             },
         )]),
@@ -75,8 +84,11 @@ fn setup(
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
         SpriteSheetBundle {
-            texture_atlas: front_handle,
-            sprite: TextureAtlasSprite::new(1),
+            texture: front_image.clone(),
+            atlas: TextureAtlas {
+                layout: front_handle.clone(),
+                ..default()
+            },
             transform: Transform::from_scale(Vec3::splat(10.)),
             ..default()
         },
@@ -90,7 +102,7 @@ fn setup(
 }
 
 fn input(
-    kb_input: Res<Input<KeyCode>>,
+    kb_input: Res<ButtonInput<KeyCode>>,
     mut actors: Query<(&mut DynamicActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
@@ -99,16 +111,16 @@ fn input(
         let mut direction = act.angle;
 
         // Update action and direction of actor
-        if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
+        if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
             action = Action::Idle as u16;
             direction = Angle::Left;
-        } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
             action = Action::Idle as u16;
             direction = Angle::Right;
-        } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
             action = Action::Idle as u16;
             direction = Angle::Back;
-        } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
             action = Action::Idle as u16;
             direction = Angle::Front;
         }

@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
+use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
-use bevy_sprite3d::{AtlasSprite3d, Sprite3dParams, Sprite3dPlugin};
+use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewTextures,
+    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewSprite, ViewTextures,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -44,7 +45,7 @@ fn main() {
         // Add the plugin
         .add_plugins(View2DAnglePlugin)
         .add_plugins(Sprite3dPlugin)
-        .add_state::<GameState>()
+        .init_state::<GameState>()
         .add_systems(Startup, load_texture)
         .add_systems(Update, setup.run_if(in_state(GameState::Loading)))
         .add_systems(Update, input.run_if(in_state(GameState::Ready)))
@@ -54,16 +55,15 @@ fn main() {
 fn load_texture(
     asset_server: Res<AssetServer>,
     mut animation2d: ResMut<ActorsTextures>,
-    mut atlases: ResMut<Assets<TextureAtlas>>,
+    mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let front_image = asset_server.load("frog_idle_front.png");
     let back_image = asset_server.load("frog_idle_back.png");
     let left_image = asset_server.load("frog_idle_left.png");
 
-    let front_atlas =
-        TextureAtlas::from_grid(front_image.clone(), Vec2::new(16., 16.), 1, 3, None, None);
-    let back_atlas = TextureAtlas::from_grid(back_image, Vec2::new(16., 16.), 1, 3, None, None);
-    let left_atlas = TextureAtlas::from_grid(left_image, Vec2::new(16., 16.), 1, 3, None, None);
+    let front_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let back_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let left_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
 
     let front_handle = atlases.add(front_atlas);
     let back_handle = atlases.add(back_atlas);
@@ -75,9 +75,18 @@ fn load_texture(
         HashMap::from([(
             Action::Idle as u16,
             ViewTextures {
-                front: Some(front_handle),
-                back: Some(back_handle),
-                left: Some(left_handle),
+                front: Some(ViewSprite {
+                    layout: front_handle.clone(),
+                    image: front_image.clone(),
+                }),
+                back: Some(ViewSprite {
+                    layout: back_handle,
+                    image: back_image,
+                }),
+                left: Some(ViewSprite {
+                    layout: left_handle,
+                    image: left_image,
+                }),
                 ..default()
             },
         )]),
@@ -97,15 +106,14 @@ fn setup(
         .unwrap()
         .front
         .as_ref()
-        .unwrap()
-        .clone();
+        .unwrap();
 
     next_state.set(GameState::Ready);
 
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
-            intensity: 5000.0,
+            intensity: 50000.0,
             shadows_enabled: true,
             ..default()
         },
@@ -115,29 +123,34 @@ fn setup(
     // camera
     commands.spawn(Camera3dBundle {
         transform: Transform::from_xyz(0., 2.5, 3.).looking_at(Vec3::Y, Vec3::Y),
+        exposure: Exposure::INDOOR,
         ..default()
     });
+
     // plane
     commands.spawn(PbrBundle {
-        mesh: sprite3d_params.meshes.add(shape::Circle::new(4.0).into()),
-        material: sprite3d_params.materials.add(Color::WHITE.into()),
+        mesh: sprite3d_params.meshes.add(Circle::new(4.0)),
+        material: sprite3d_params.materials.add(Color::WHITE),
         transform: Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
         ..default()
     });
 
     // Spawn frog
+    let texture_atlas = TextureAtlas {
+        layout: front_handle.layout.clone(),
+        index: 0,
+    };
     commands.spawn((
-        AtlasSprite3d {
-            atlas: front_handle,
+        Sprite3d {
+            image: front_handle.image.clone(),
             pixels_per_metre: 8.,
-            index: 0,
             transform: Transform {
                 translation: Vec3::new(0., 0.85, 0.),
                 ..default()
             },
             ..default()
         }
-        .bundle(&mut sprite3d_params),
+        .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
         // Specify actor for entity
         DynamicActor {
             actor: Actor::Frog as u64,
@@ -148,7 +161,7 @@ fn setup(
 }
 
 fn input(
-    kb_input: Res<Input<KeyCode>>,
+    kb_input: Res<ButtonInput<KeyCode>>,
     mut actors: Query<(&mut DynamicActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
@@ -157,16 +170,16 @@ fn input(
         let mut direction = act.angle;
 
         // Update action and direction of actor
-        if kb_input.any_pressed([KeyCode::Left, KeyCode::A]) {
+        if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
             action = Action::Idle as u16;
             direction = Angle::Left;
-        } else if kb_input.any_pressed([KeyCode::Right, KeyCode::D]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
             action = Action::Idle as u16;
             direction = Angle::Right;
-        } else if kb_input.any_pressed([KeyCode::Up, KeyCode::W]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
             action = Action::Idle as u16;
             direction = Angle::Back;
-        } else if kb_input.any_pressed([KeyCode::Down, KeyCode::S]) {
+        } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
             action = Action::Idle as u16;
             direction = Angle::Front;
         }

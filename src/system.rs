@@ -1,11 +1,8 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::{Assets, Handle};
-use bevy::prelude::{
-    EventReader, Query, Res, ResMut, StandardMaterial, TextureAtlasSprite, Time, Transform,
-};
-use bevy::sprite::TextureAtlas;
-use bevy_sprite3d::AtlasSprite3dComponent;
+use bevy::prelude::{EventReader, Image, Query, Res, ResMut, StandardMaterial, Time, Transform};
+use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
 
 use crate::component::*;
 
@@ -15,11 +12,9 @@ pub fn view_changed_event(
         &mut DynamicActor,
         &mut Transform,
         Option<&Handle<StandardMaterial>>,
-        Option<&mut Handle<TextureAtlas>>,
+        Option<&mut Handle<Image>>,
     )>,
-    #[cfg(feature = "3d")]
-    mut mats: ResMut<Assets<StandardMaterial>>,
-    atlases: Res<Assets<TextureAtlas>>,
+    #[cfg(feature = "3d")] mut mats: ResMut<Assets<StandardMaterial>>,
     animation2d: Res<ActorsTextures>,
 ) {
     for event in events.read() {
@@ -55,20 +50,20 @@ pub fn view_changed_event(
             #[cfg(feature = "3d")]
             if let (Some(mat), Some(atlas)) = (s.2, atlas) {
                 let material = mats.get_mut(&*mat).unwrap();
-                if let Some(atlas) = atlases.get(atlas) {
-                    material.base_color_texture = Some(atlas.texture.clone());
-                }
+                // if let Some(atlas) = atlases.get(atlas) {
+                material.base_color_texture = Some(atlas.image.clone());
+                // }
             }
 
             #[cfg(feature = "2d")]
             if let (Some(mut handle), Some(atlas)) = (s.3, atlas) {
-                *handle = atlas.clone();
+                *handle = atlas.image.clone();
             }
         }
     }
 }
 
-fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> &Option<Handle<TextureAtlas>> {
+fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> &Option<ViewSprite> {
     match direction {
         Angle::Left => &texture.right,
         Angle::Right => &texture.left,
@@ -82,28 +77,16 @@ fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> &Option<Handle
 
 pub fn dynamic_actor_animate(
     time: Res<Time>,
-    atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(
-        &mut DynamicActor,
-        Option<&mut AtlasSprite3dComponent>,
-        Option<&mut TextureAtlasSprite>,
-        Option<&Handle<TextureAtlas>>,
-    )>,
+    atlases: Res<Assets<TextureAtlasLayout>>,
+    mut query: Query<(&mut DynamicActor, Option<&mut TextureAtlas>)>,
 ) {
-    for (mut actor, sprite3d, sprite2d, atlas_handle) in &mut query {
+    for (mut actor, texture_atlas) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
             animation_timer.tick(time.delta());
             if animation_timer.just_finished() {
-                #[cfg(feature = "3d")]
-                if let Some(mut sprite) = sprite3d {
-                    sprite.index = (sprite.index + 1) % sprite.atlas.len();
-                }
-
-                #[cfg(feature = "2d")]
-                if let (Some(mut sprite), Some(atlas_handle)) = (sprite2d, atlas_handle) {
-                    if let Some(atlas) = atlases.get(atlas_handle) {
-                        let len = atlas.textures.len();
-                        sprite.index = (sprite.index + 1) % len;
+                if let Some(mut atlas) = texture_atlas {
+                    if let Some(layout) = atlases.get(&atlas.layout) {
+                        atlas.index = (atlas.index + 1) % layout.textures.len();
                     }
                 }
             }

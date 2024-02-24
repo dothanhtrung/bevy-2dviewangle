@@ -1,9 +1,10 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
-use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Resource, Timer};
-use bevy::sprite::TextureAtlas;
 use std::collections::HashMap;
+
+use bevy::asset::Handle;
+use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
+use bevy::sprite::TextureAtlasLayout;
 
 #[derive(Default, Clone, Copy, Eq, PartialEq)]
 pub enum Angle {
@@ -19,15 +20,21 @@ pub enum Angle {
 }
 
 #[derive(Default)]
+pub struct ViewSprite {
+    pub layout: Handle<TextureAtlasLayout>,
+    pub image: Handle<Image>,
+}
+
+#[derive(Default)]
 pub struct ViewTextures {
-    pub front: Option<Handle<TextureAtlas>>,
-    pub back: Option<Handle<TextureAtlas>>,
-    pub left: Option<Handle<TextureAtlas>>,
-    pub right: Option<Handle<TextureAtlas>>,
-    pub front_left: Option<Handle<TextureAtlas>>,
-    pub front_right: Option<Handle<TextureAtlas>>,
-    pub back_left: Option<Handle<TextureAtlas>>,
-    pub back_right: Option<Handle<TextureAtlas>>,
+    pub front: Option<ViewSprite>,
+    pub back: Option<ViewSprite>,
+    pub left: Option<ViewSprite>,
+    pub right: Option<ViewSprite>,
+    pub front_left: Option<ViewSprite>,
+    pub front_right: Option<ViewSprite>,
+    pub back_left: Option<ViewSprite>,
+    pub back_right: Option<ViewSprite>,
 }
 
 #[derive(Component, Default)]

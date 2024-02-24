@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -10,8 +10,8 @@ description = "Bevy plugin for easier to switch texture base on view angles"
 exclude = ["assets", "examples"]
 
 [dependencies]
-bevy = { version = "0.12", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
-bevy_sprite3d = { version = "2.7.0", optional = true }
+bevy = { version = "0.13", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+bevy_sprite3d = { git="https://github.com/vertesians/bevy_sprite3d", optional = true }
 
 [features]
 default = ["2d", "3d"]
@@ -19,5 +19,5 @@ default = ["2d", "3d"]
 2d = []
 
 [dev-dependencies]
-bevy = "0.12"
-bevy_sprite3d = "2.7.0"
+bevy = "0.13"
+bevy_sprite3d = { git="https://github.com/vertesians/bevy_sprite3d" }

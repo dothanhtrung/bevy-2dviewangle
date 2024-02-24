@@ -29,7 +29,7 @@ Examples
 
 ## Compatible Bevy Versions
 
-| bevy  | bevy_2dviewangle |
-|-------|------------------|
-| 0.12  | branch `master`  |
-| 0.12  | 0.1.0            |
+| bevy | bevy_2dviewangle |
+|------|------------------|
+| 0.13 | branch `master`  |
+| 0.12 | 0.1.0            |
