@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -11,7 +11,7 @@ exclude = ["assets", "examples"]
 
 [dependencies]
 bevy = { version = "0.13", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
-bevy_sprite3d = { git="https://github.com/vertesians/bevy_sprite3d", optional = true }
+bevy_sprite3d = { version = "2.8", optional = true }
 
 [features]
 default = ["2d", "3d"]
@@ -20,4 +20,4 @@ default = ["2d", "3d"]
 
 [dev-dependencies]
 bevy = "0.13"
-bevy_sprite3d = { git="https://github.com/vertesians/bevy_sprite3d" }
+bevy_sprite3d = "2.8"
