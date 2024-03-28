@@ -19,13 +19,13 @@ Examples
 
 ![2d demo](https://i.imgur.com/7fRkkg3.mp4)
 
-[2d example](./examples/2d.rs)
+[2d example](bevy-2dviewangle/examples/2d.rs)
 
 ### 3d
 
 ![3d demo](https://i.imgur.com/i3JnW9K.mp4)
 
-[3d example](./examples/3d.rs)
+[3d example](bevy-2dviewangle/examples/3d.rs)
 
 ## Compatible Bevy Versions
 
