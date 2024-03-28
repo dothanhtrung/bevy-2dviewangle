@@ -1,0 +1,19 @@
+[package]
+name = "bevy_2dviewangle_derive"
+version = "0.1.0"
+authors = ["Trung Do <dothanhtrung@pm.me>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://gitlab.com/kimtinh/bevy-2dviewangle"
+keywords = ["bevy"]
+description = "Bevy plugin for easier to switch texture base on view angles (derive)"
+exclude = ["assets", "examples"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+bevy = { version = "0.13", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+proc-macro2 = "1.0"
+syn = "2.0"
+quote = "1.0"

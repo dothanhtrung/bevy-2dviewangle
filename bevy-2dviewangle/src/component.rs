@@ -53,3 +53,9 @@ pub struct ActorsTextures(HashMap<u64, HashMap<u16, ViewTextures>>);
 pub struct ViewChanged {
     pub entity: Entity,
 }
+
+impl ActorsTextures {
+    pub fn load_asset_loader(&mut self) {
+
+    }
+}
