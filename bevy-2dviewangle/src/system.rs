@@ -23,16 +23,7 @@ pub fn view_changed_event(
             let mut transform = s.1;
 
             let action = view.action;
-            let mut atlas = match view.angle {
-                Angle::Front => &animation2d[&view.actor][&action].front,
-                Angle::Back => &animation2d[&view.actor][&action].back,
-                Angle::Left => &animation2d[&view.actor][&action].left,
-                Angle::Right => &animation2d[&view.actor][&action].right,
-                Angle::FrontLeft => &animation2d[&view.actor][&action].front_left,
-                Angle::FrontRight => &animation2d[&view.actor][&action].front_right,
-                Angle::BackLeft => &animation2d[&view.actor][&action].back_left,
-                Angle::BackRight => &animation2d[&view.actor][&action].back_right,
-            };
+            let mut atlas = animation2d[&view.actor][&action].get(&view.angle);
 
             if view.flipped {
                 transform.rotate_y(std::f64::consts::PI as f32);
@@ -63,15 +54,15 @@ pub fn view_changed_event(
     }
 }
 
-fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> &Option<ViewSprite> {
+fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> Option<&ViewSprite> {
     match direction {
-        Angle::Left => &texture.right,
-        Angle::Right => &texture.left,
-        Angle::FrontLeft => &texture.front_right,
-        Angle::FrontRight => &texture.front_left,
-        Angle::BackLeft => &texture.back_right,
-        Angle::BackRight => &texture.back_left,
-        _ => &None,
+        Angle::Left => texture.get(&Angle::Right),
+        Angle::Right => texture.get(&Angle::Left),
+        Angle::FrontLeft => texture.get(&Angle::FrontRight),
+        Angle::FrontRight => texture.get(&Angle::FrontLeft),
+        Angle::BackLeft => texture.get(&Angle::BackRight),
+        Angle::BackRight => texture.get(&Angle::BackLeft),
+        _ => None,
     }
 }
 

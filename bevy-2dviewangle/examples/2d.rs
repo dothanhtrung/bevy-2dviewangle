@@ -63,21 +63,29 @@ fn setup(
         Actor::Frog as u64,
         HashMap::from([(
             Action::Idle as u16,
-            ViewTextures {
-                front: Some(ViewSprite {
-                    layout: front_handle.clone(),
-                    image: front_image.clone(),
-                }),
-                back: Some(ViewSprite {
-                    layout: back_handle,
-                    image: back_image,
-                }),
-                left: Some(ViewSprite {
-                    layout: left_handle,
-                    image: left_image,
-                }),
-                ..default()
-            },
+            ViewTextures::from(vec![
+                (
+                    Angle::Front,
+                    ViewSprite {
+                        layout: front_handle.clone(),
+                        image: front_image.clone(),
+                    },
+                ),
+                (
+                    Angle::Back,
+                    ViewSprite {
+                        layout: back_handle,
+                        image: back_image,
+                    },
+                ),
+                (
+                    Angle::Left,
+                    ViewSprite {
+                        layout: left_handle,
+                        image: left_image,
+                    },
+                ),
+            ]),
         )]),
     );
 

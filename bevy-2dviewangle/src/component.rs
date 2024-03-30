@@ -25,17 +25,8 @@ pub struct ViewSprite {
     pub image: Handle<Image>,
 }
 
-#[derive(Default)]
-pub struct ViewTextures {
-    pub front: Option<ViewSprite>,
-    pub back: Option<ViewSprite>,
-    pub left: Option<ViewSprite>,
-    pub right: Option<ViewSprite>,
-    pub front_left: Option<ViewSprite>,
-    pub front_right: Option<ViewSprite>,
-    pub back_left: Option<ViewSprite>,
-    pub back_right: Option<ViewSprite>,
-}
+#[derive(Default, Deref, DerefMut)]
+pub struct ViewTextures(HashMap<Angle, ViewSprite>);
 
 #[derive(Component, Default)]
 pub struct DynamicActor {
@@ -52,6 +43,16 @@ pub struct ActorsTextures(HashMap<u64, HashMap<u16, ViewTextures>>);
 #[derive(Event)]
 pub struct ViewChanged {
     pub entity: Entity,
+}
+
+impl ViewTextures {
+    pub fn from(items: Vec<(Angle, ViewSprite)>) -> Self {
+        let mut map = HashMap::new();
+        for (key, value) in items {
+            map.insert(key, value);
+        }
+        Self(map)
+    }
 }
 
 impl ActorsTextures {
