@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "bevy-2dviewangle",
-    "bevy-2dviewangle-derive"
+    "bevy-2dviewangle-derive",
+    "bevy-2dviewangle-common",
 ]
 resolver = "2"

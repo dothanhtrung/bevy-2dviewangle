@@ -1,12 +1,12 @@
 use proc_macro::TokenStream;
 
-use quote::{quote, ToTokens};
-use syn::punctuated::Punctuated;
+use quote::quote;
 use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+use syn::punctuated::Punctuated;
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
 
-#[proc_macro_derive(ActorsTextures, attributes(actor))]
+#[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
 pub fn actors_textures_derive(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
     impl_actors_textures(ast).unwrap_or_default().into()
@@ -41,7 +41,7 @@ fn impl_actors_textures(
                                     lit: Lit::Int(key), ..
                                 }) = &named_value.value
                                 {
-                                    actor_value = Some(key.base10_parse::<u32>().unwrap());
+                                    actor_value = Some(key.base10_parse::<u64>().unwrap());
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
@@ -49,7 +49,7 @@ fn impl_actors_textures(
                                     lit: Lit::Int(key), ..
                                 }) = &named_value.value
                                 {
-                                    action_value = Some(key.base10_parse::<u32>().unwrap());
+                                    action_value = Some(key.base10_parse::<u16>().unwrap());
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
@@ -92,20 +92,10 @@ fn impl_actors_textures(
                 }
             });
             let expanded = quote! {
-                pub struct FieldInfo {
-                    pub actor: u64,
-                    pub action: u16,
-                    pub angle: String,
-                    pub image: Option<Handle<Image>>,
-                    pub atlas_layout: Option<Handle<TextureAtlasLayout>>,
-                }
+                use bevy_2dviewange_common::{ActorsTexturesLoader, FieldInfo};
 
-                pub trait ActorsTexturesLoader {
-                    pub fn get_all(&self)  -> Vec<FieldInfo>;
-                }
-
-                impl #struct_name {
-                    pub fn get_all(&self) -> Vec<FieldInfo> {
+                impl ActorsTexturesLoader for #struct_name {
+                    fn get_all(&self) -> Vec<FieldInfo> {
                         vec![#( #field_info ),*]
                     }
                 }

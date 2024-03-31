@@ -6,7 +6,10 @@ use bevy::asset::Handle;
 use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
 use bevy::sprite::TextureAtlasLayout;
 
-#[derive(Default, Clone, Copy, Eq, PartialEq)]
+#[cfg(feature = "asset_loader")]
+use bevy_2dviewangle_common::ActorsTexturesLoader;
+
+#[derive(Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Angle {
     #[default]
     Front,
@@ -56,7 +59,51 @@ impl ViewTextures {
 }
 
 impl ActorsTextures {
-    pub fn load_asset_loader(&mut self) {
+    // #[cfg(feature = "asset_loader")]
+    pub fn load_asset_loader<T: ActorsTexturesLoader>(&mut self, loader: &T) {
+        let fields = loader.get_all();
+        for field in fields {
+            let field_angle = match field.angle.as_str() {
+                "front" => Angle::Front,
+                "back" => Angle::Back,
+                "left" => Angle::Left,
+                "right" => Angle::Right,
+                "front_left" => Angle::FrontLeft,
+                "front_right" => Angle::FrontRight,
+                "back_left" => Angle::BackLeft,
+                "back_right" => Angle::BackRight,
+                _ => Angle::Front,
+            };
+            let mut actor;
+            if let Some(mut _actor) = self.get_mut(&field.actor) {
+                actor = _actor;
+            } else {
+                self.insert(field.actor, HashMap::default());
+                actor = self.get_mut(&field.actor).unwrap();
+            }
 
+            let mut action;
+            if let Some(mut _action) = actor.get_mut(&field.action) {
+                action = _action;
+            } else {
+                actor.insert(field.action, ViewTextures::default());
+                action = actor.get_mut(&field.action).unwrap();
+            }
+
+            let mut sprite;
+            if let Some(mut _sprite) = action.get_mut(&field_angle) {
+                sprite = _sprite;
+            } else {
+                action.insert(field_angle, ViewSprite::default());
+                sprite = action.get_mut(&field_angle).unwrap();
+            }
+
+            if let Some(image) = field.image {
+                sprite.image = image.clone();
+            }
+            if let Some(atlas_layout) = field.atlas_layout {
+                sprite.layout = atlas_layout;
+            }
+        }
     }
 }
