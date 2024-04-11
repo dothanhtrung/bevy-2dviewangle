@@ -24,4 +24,3 @@ asset_loader = []
 bevy = "0.13"
 bevy_sprite3d = "2.8"
 bevy_asset_loader = { version = "0.20", features = ["2d", "3d", "standard_dynamic_assets"] }
-bevy_2dviewangle_macro = { path = "../bevy-2dviewangle-macro" }
