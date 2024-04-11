@@ -6,11 +6,24 @@ use bevy::asset::Handle;
 use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
 use bevy::sprite::TextureAtlasLayout;
 
-#[cfg(feature = "asset_loader")]
-use bevy_2dviewangle_common::ActorsTexturesLoader;
+pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
+
+#[derive(Default)]
+pub struct FieldInfo<'a> {
+    pub actor: Option<u64>,
+    pub action: Option<u16>,
+    pub angle: Option<String>,
+    pub image: Option<&'a Handle<Image>>,
+    pub atlas_layout: Option<&'a Handle<TextureAtlasLayout>>,
+}
+
+pub trait ActorsTexturesCollection {
+    fn get_all(&self) -> Vec<FieldInfo>;
+}
 
 #[derive(Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Angle {
+    Any,
     #[default]
     Front,
     Back,
@@ -60,10 +73,10 @@ impl ViewTextures {
 
 impl ActorsTextures {
     // #[cfg(feature = "asset_loader")]
-    pub fn load_asset_loader<T: ActorsTexturesLoader>(&mut self, loader: &T) {
+    pub fn load_asset_loader<T: ActorsTexturesCollection>(&mut self, loader: &T) {
         let fields = loader.get_all();
         for field in fields {
-            let field_angle = match field.angle.as_str() {
+            let field_angle = match field.angle.unwrap_or_default().as_str() {
                 "front" => Angle::Front,
                 "back" => Angle::Back,
                 "left" => Angle::Left,
@@ -72,25 +85,25 @@ impl ActorsTextures {
                 "front_right" => Angle::FrontRight,
                 "back_left" => Angle::BackLeft,
                 "back_right" => Angle::BackRight,
-                _ => Angle::Front,
+                _ => Angle::Any,
             };
-            let mut actor;
-            if let Some(mut _actor) = self.get_mut(&field.actor) {
+            let actor;
+            if let Some(mut _actor) = self.get_mut(&field.actor.unwrap_or_default()) {
                 actor = _actor;
             } else {
-                self.insert(field.actor, HashMap::default());
-                actor = self.get_mut(&field.actor).unwrap();
+                self.insert(field.actor.unwrap_or_default(), HashMap::default());
+                actor = self.get_mut(&field.actor.unwrap_or_default()).unwrap();
             }
 
-            let mut action;
-            if let Some(mut _action) = actor.get_mut(&field.action) {
+            let action;
+            if let Some(mut _action) = actor.get_mut(&field.action.unwrap_or_default()) {
                 action = _action;
             } else {
-                actor.insert(field.action, ViewTextures::default());
-                action = actor.get_mut(&field.action).unwrap();
+                actor.insert(field.action.unwrap_or_default(), ViewTextures::default());
+                action = actor.get_mut(&field.action.unwrap_or_default()).unwrap();
             }
 
-            let mut sprite;
+            let sprite;
             if let Some(mut _sprite) = action.get_mut(&field_angle) {
                 sprite = _sprite;
             } else {
@@ -102,7 +115,7 @@ impl ActorsTextures {
                 sprite.image = image.clone();
             }
             if let Some(atlas_layout) = field.atlas_layout {
-                sprite.layout = atlas_layout;
+                sprite.layout = atlas_layout.clone();
             }
         }
     }

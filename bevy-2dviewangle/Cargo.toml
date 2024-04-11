@@ -12,17 +12,15 @@ exclude = ["assets", "examples"]
 [dependencies]
 bevy = { version = "0.13", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
 bevy_sprite3d = { version = "2.8", optional = true }
-bevy_2dviewangle_derive = { path = "../bevy-2dviewangle-derive", optional = true }
+bevy_2dviewangle_macro = { path = "../bevy-2dviewangle-macro" }
 
 [features]
 default = ["2d", "3d"]
 3d = ["dep:bevy_sprite3d"]
 2d = []
-asset_loader = ["dep:bevy_2dviewangle_derive"]
+asset_loader = []
 
 [dev-dependencies]
 bevy = "0.13"
 bevy_sprite3d = "2.8"
-bevy_2dviewangle_derive = { path = "../bevy-2dviewangle-derive" }
-bevy_2dviewangle_common = { path = "../bevy-2dviewangle-common" }
 bevy_asset_loader = { version = "0.20", features = ["2d", "3d", "standard_dynamic_assets"] }

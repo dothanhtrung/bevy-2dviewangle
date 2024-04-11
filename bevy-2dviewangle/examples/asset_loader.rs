@@ -1,12 +1,13 @@
-
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
+use bevy_asset_loader::prelude::{
+    AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt,
+};
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged,
+    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin,
+    ViewChanged,
 };
-use bevy_2dviewangle_derive::ActorsTexturesCollection;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
 enum MyStates {
@@ -30,27 +31,27 @@ enum Action {
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
-    #[textureview(actor = 0, action = 0, angle = "back")]
+    #[textureview(actor = 0, action = 0, angle = "back", handle = "image")]
     pub idle_back: Handle<Image>,
 
     #[asset(path = "frog_idle_left.png")]
-    #[textureview(actor = 0, action = 0, angle = "left")]
+    #[textureview(actor = 0, action = 0, angle = "left", handle = "image")]
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = 0, action = 0, angle = "front", handle = "atlas")]
     pub front_layout: Handle<TextureAtlasLayout>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "back")]
+    #[textureview(actor = 0, action = 0, angle = "back", handle = "atlas")]
     pub back_layout: Handle<TextureAtlasLayout>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "left")]
+    #[textureview(actor = 0, action = 0, angle = "left", handle = "atlas")]
     pub left_layout: Handle<TextureAtlasLayout>,
 }
 
@@ -68,6 +69,7 @@ fn main() {
                     ..default()
                 }),
         )
+        .init_state::<MyStates>()
         .add_loading_state(
             LoadingState::new(MyStates::AssetLoading)
                 .continue_to_state(MyStates::Next)
@@ -82,8 +84,6 @@ fn main() {
 
 fn setup(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     mut animation2d: ResMut<ActorsTextures>,
     my_assets: ResMut<MyAssets>,
 ) {

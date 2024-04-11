@@ -1,14 +1,15 @@
+// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 use syn::punctuated::Punctuated;
+use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
-
 #[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
 pub fn actors_textures_derive(input: TokenStream) -> TokenStream {
-    let ast = syn::parse(input).unwrap();
+    let ast: syn::DeriveInput = syn::parse(input).unwrap();
     impl_actors_textures(ast).unwrap_or_default().into()
 }
 
@@ -23,8 +24,8 @@ fn impl_actors_textures(
                 let field_name = field.ident.as_ref().unwrap();
                 let mut actor_value = None;
                 let mut action_value = None;
-                let mut angle_value = None;
-                let mut type_value = String::from("");
+                let mut angle_value = String::new();
+                let mut type_value = String::new();
 
                 for attr in field
                     .attrs
@@ -57,10 +58,10 @@ fn impl_actors_textures(
                                     lit: Lit::Str(key), ..
                                 }) = &named_value.value
                                 {
-                                    angle_value = Some(key.value());
+                                    angle_value = key.value();
                                 }
                             }
-                            Meta::NameValue(named_value) if named_value.path.is_ident("type") => {
+                            Meta::NameValue(named_value) if named_value.path.is_ident("handle") => {
                                 if let Expr::Lit(ExprLit {
                                     lit: Lit::Str(key), ..
                                 }) = &named_value.value
@@ -73,34 +74,39 @@ fn impl_actors_textures(
                     }
                 }
 
-                let mut image_value = None;
-                let mut atlas_layout_value = None;
+                let field_value = quote! {&self.#field_name};
 
                 if type_value == "image" {
-                    image_value = Some(quote! {self.#field_name});
-                } else if type_value == "atlas_layout" {
-                    atlas_layout_value = Some(quote! {self.#field_name});
-                }
-                quote! {
-                FieldInfo {
-                    actor: #actor_value,
-                    action: #action_value,
-                    angle: #angle_value,
-                    image: #image_value,
-                    atlas_layout: #atlas_layout_value,
+                    quote! {
+                        FieldInfo {
+                            actor: #actor_value.into(),
+                            action: #action_value.into(),
+                            angle: Some(#angle_value.to_string()),
+                            image: Some(#field_value),
+                            atlas_layout: None,
+                        }
+                    }
+                } else {
+                    quote! {
+                        FieldInfo {
+                            actor: #actor_value.into(),
+                            action: #action_value.into(),
+                            angle: Some(#angle_value.to_string()),
+                            image: None,
+                            atlas_layout: Some(#field_value),
+                        }
                     }
                 }
             });
             let expanded = quote! {
-                use bevy_2dviewange_common::{ActorsTexturesLoader, FieldInfo};
-
-                impl ActorsTexturesLoader for #struct_name {
+                #[automatically_derived]
+                impl ActorsTexturesCollection for #struct_name {
                     fn get_all(&self) -> Vec<FieldInfo> {
                         vec![#( #field_info ),*]
                     }
                 }
             };
-            return Ok(proc_macro2::TokenStream::from(expanded));
+            return Ok(expanded);
         }
     }
 
