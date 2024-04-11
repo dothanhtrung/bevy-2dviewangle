@@ -35,23 +35,23 @@ pub struct MyAssets {
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
-    #[textureview(actor = 0, action = 0, angle = "back", handle = "image")]
+    #[textureview(angle = "back", handle = "image")]
     pub idle_back: Handle<Image>,
 
     #[asset(path = "frog_idle_left.png")]
-    #[textureview(actor = 0, action = 0, angle = "left", handle = "image")]
+    #[textureview(angle = "left", handle = "image")]
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "front", handle = "atlas")]
+    #[textureview(angle = "front", handle = "atlas")]
     pub front_layout: Handle<TextureAtlasLayout>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "back", handle = "atlas")]
+    #[textureview(angle = "back", handle = "atlas")]
     pub back_layout: Handle<TextureAtlasLayout>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(actor = 0, action = 0, angle = "left", handle = "atlas")]
+    #[textureview(angle = "left", handle = "atlas")]
     pub left_layout: Handle<TextureAtlasLayout>,
 }
 

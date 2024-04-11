@@ -75,7 +75,11 @@ impl ActorsTextures {
     // #[cfg(feature = "asset_loader")]
     pub fn load_asset_loader<T: ActorsTexturesCollection>(&mut self, loader: &T) {
         let fields = loader.get_all();
+        let mut actor_id = 0;
+        let mut action_id = 0;
         for field in fields {
+            actor_id = field.actor.unwrap_or(actor_id);
+            action_id = field.action.unwrap_or(action_id);
             let field_angle = match field.angle.unwrap_or_default().as_str() {
                 "front" => Angle::Front,
                 "back" => Angle::Back,
@@ -88,19 +92,19 @@ impl ActorsTextures {
                 _ => Angle::Any,
             };
             let actor;
-            if let Some(mut _actor) = self.get_mut(&field.actor.unwrap_or_default()) {
+            if let Some(_actor) = self.get_mut(&actor_id) {
                 actor = _actor;
             } else {
-                self.insert(field.actor.unwrap_or_default(), HashMap::default());
-                actor = self.get_mut(&field.actor.unwrap_or_default()).unwrap();
+                self.insert(actor_id, HashMap::default());
+                actor = self.get_mut(&actor_id).unwrap();
             }
 
             let action;
-            if let Some(mut _action) = actor.get_mut(&field.action.unwrap_or_default()) {
+            if let Some(_action) = actor.get_mut(&action_id) {
                 action = _action;
             } else {
-                actor.insert(field.action.unwrap_or_default(), ViewTextures::default());
-                action = actor.get_mut(&field.action.unwrap_or_default()).unwrap();
+                actor.insert(action_id, ViewTextures::default());
+                action = actor.get_mut(&action_id).unwrap();
             }
 
             let sprite;

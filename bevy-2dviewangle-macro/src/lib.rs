@@ -3,8 +3,8 @@
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::punctuated::Punctuated;
 use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+use syn::punctuated::Punctuated;
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
 #[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
@@ -22,9 +22,11 @@ fn impl_actors_textures(
         if let Fields::Named(fields) = &data_struct.fields {
             let field_info = fields.named.iter().map(|field| {
                 let field_name = field.ident.as_ref().unwrap();
-                let mut actor_value = None;
-                let mut action_value = None;
-                let mut angle_value = String::new();
+                let mut actor_value = quote! {None};
+                let mut action_value = quote! {None};
+                let mut angle_value = quote! {None};
+                let mut image_value = quote! {None};
+                let mut atlas_layout_value = quote! {None};
                 let mut type_value = String::new();
 
                 for attr in field
@@ -42,7 +44,8 @@ fn impl_actors_textures(
                                     lit: Lit::Int(key), ..
                                 }) = &named_value.value
                                 {
-                                    actor_value = Some(key.base10_parse::<u64>().unwrap());
+                                    let value = key.base10_parse::<u64>().unwrap();
+                                    actor_value = quote! {Some(#value)};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
@@ -50,7 +53,8 @@ fn impl_actors_textures(
                                     lit: Lit::Int(key), ..
                                 }) = &named_value.value
                                 {
-                                    action_value = Some(key.base10_parse::<u16>().unwrap());
+                                    let value = key.base10_parse::<u16>().unwrap();
+                                    action_value = quote! {Some(#value)};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
@@ -58,7 +62,8 @@ fn impl_actors_textures(
                                     lit: Lit::Str(key), ..
                                 }) = &named_value.value
                                 {
-                                    angle_value = key.value();
+                                    let value = key.value();
+                                    angle_value = quote! {Some(#value.to_string())};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("handle") => {
@@ -74,27 +79,19 @@ fn impl_actors_textures(
                     }
                 }
 
-                let field_value = quote! {&self.#field_name};
+                match type_value.as_str() {
+                    "image" => image_value = quote! {Some(&self.#field_name)},
+                    "atlas_layout" => atlas_layout_value = quote! {Some(&self.#field_name)},
+                    _ => {}
+                }
 
-                if type_value == "image" {
-                    quote! {
-                        FieldInfo {
-                            actor: #actor_value.into(),
-                            action: #action_value.into(),
-                            angle: Some(#angle_value.to_string()),
-                            image: Some(#field_value),
-                            atlas_layout: None,
-                        }
-                    }
-                } else {
-                    quote! {
-                        FieldInfo {
-                            actor: #actor_value.into(),
-                            action: #action_value.into(),
-                            angle: Some(#angle_value.to_string()),
-                            image: None,
-                            atlas_layout: Some(#field_value),
-                        }
+                quote! {
+                    FieldInfo {
+                        actor: #actor_value,
+                        action: #action_value,
+                        angle: #angle_value,
+                        image: #image_value,
+                        atlas_layout: #atlas_layout_value,
                     }
                 }
             });
