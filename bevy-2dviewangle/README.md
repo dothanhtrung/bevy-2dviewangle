@@ -31,6 +31,10 @@ Examples
 
 [asset loader example](examples/asset_loader.rs)
 
+## License
+
+Please see [LICENSE](../LICENSE).
+
 ## Compatible Bevy Versions
 
 | bevy | bevy_2dviewangle         |
