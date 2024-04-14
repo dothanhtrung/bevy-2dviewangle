@@ -43,16 +43,8 @@ pub struct MyAssets {
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "front", handle = "atlas")]
+    #[textureview(angle = "front", handle = "atlas", angle = "any")]
     pub front_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "back", handle = "atlas")]
-    pub back_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "left", handle = "atlas")]
-    pub left_layout: Handle<TextureAtlasLayout>,
 }
 
 fn main() {
@@ -85,7 +77,7 @@ fn main() {
 fn setup(
     mut commands: Commands,
     mut animation2d: ResMut<ActorsTextures>,
-    my_assets: ResMut<MyAssets>,
+    my_assets: Res<MyAssets>,
 ) {
     animation2d.load_asset_loader(my_assets.as_ref());
 

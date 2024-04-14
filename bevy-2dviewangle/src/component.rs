@@ -5,7 +5,6 @@ use std::collections::HashMap;
 use bevy::asset::Handle;
 use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
 use bevy::sprite::TextureAtlasLayout;
-
 pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 
 #[derive(Default)]
@@ -35,10 +34,10 @@ pub enum Angle {
     BackRight,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct ViewSprite {
-    pub layout: Handle<TextureAtlasLayout>,
-    pub image: Handle<Image>,
+    pub layout: Option<Handle<TextureAtlasLayout>>,
+    pub image: Option<Handle<Image>>,
 }
 
 #[derive(Default, Deref, DerefMut)]
@@ -72,7 +71,6 @@ impl ViewTextures {
 }
 
 impl ActorsTextures {
-    // #[cfg(feature = "asset_loader")]
     pub fn load_asset_loader<T: ActorsTexturesCollection>(&mut self, loader: &T) {
         let fields = loader.get_all();
         let mut actor_id = 0;
@@ -107,8 +105,9 @@ impl ActorsTextures {
                 action = actor.get_mut(&action_id).unwrap();
             }
 
+            let any = action.get(&Angle::Any).cloned();
             let sprite;
-            if let Some(mut _sprite) = action.get_mut(&field_angle) {
+            if let Some(_sprite) = action.get_mut(&field_angle) {
                 sprite = _sprite;
             } else {
                 action.insert(field_angle, ViewSprite::default());
@@ -116,10 +115,27 @@ impl ActorsTextures {
             }
 
             if let Some(image) = field.image {
-                sprite.image = image.clone();
+                sprite.image = Some(image.clone());
+            } else if any.is_some() {
+                sprite.image = any.as_ref().unwrap().image.clone();
             }
+
             if let Some(atlas_layout) = field.atlas_layout {
-                sprite.layout = atlas_layout.clone();
+                sprite.layout = Some(atlas_layout.clone());
+            } else if any.is_some() {
+                sprite.layout = any.unwrap().layout.clone();
+            }
+
+            if field_angle == Angle::Any {
+                let any = sprite.clone();
+                for s in action.values_mut() {
+                    if s.image.is_none() {
+                        s.image = any.image.clone();
+                    }
+                    if s.layout.is_none() {
+                        s.layout = any.layout.clone();
+                    }
+                }
             }
         }
     }

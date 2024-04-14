@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,6 @@ bevy_2dviewangle_macro = "0.1.0"
 default = ["2d", "3d"]
 3d = ["dep:bevy_sprite3d"]
 2d = []
-asset_loader = []
 
 [dev-dependencies]
 bevy = "0.13"
