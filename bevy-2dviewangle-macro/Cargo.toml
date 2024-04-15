@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle_macro"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -13,7 +13,6 @@ exclude = ["assets", "examples"]
 proc-macro = true
 
 [dependencies]
-bevy = { version = "0.13", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
 proc-macro2 = "1.0"
 syn = "2.0"
 quote = "1.0"
