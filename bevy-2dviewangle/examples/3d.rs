@@ -1,12 +1,11 @@
-use std::collections::HashMap;
-
 use bevy::prelude::*;
 use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
 use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{
-    ActorsTextures, Angle, DynamicActor, View2DAnglePlugin, ViewChanged, ViewSprite, ViewTextures,
+    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin,
+    ViewChanged,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -19,6 +18,24 @@ enum Actor {
 #[repr(u16)]
 enum Action {
     Idle,
+}
+
+// Struct to load spritesheet
+#[derive(ActorsTexturesCollection, Default)]
+struct MyAssets {
+    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
+    pub idle_front: Handle<Image>,
+
+    // If not specify actor/action, the previous value will be used
+    #[textureview(angle = "back", handle = "image")]
+    pub idle_back: Handle<Image>,
+
+    #[textureview(angle = "left", handle = "image")]
+    pub idle_left: Handle<Image>,
+
+    // If angle is any, other angle which has not been defined will use this value
+    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
+    pub layout: Handle<TextureAtlasLayout>,
 }
 
 #[derive(States, Hash, Clone, PartialEq, Eq, Debug, Default)]
@@ -57,48 +74,16 @@ fn load_texture(
     mut animation2d: ResMut<ActorsTextures>,
     mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let front_image = asset_server.load("frog_idle_front.png");
-    let back_image = asset_server.load("frog_idle_back.png");
-    let left_image = asset_server.load("frog_idle_left.png");
+    let mut my_assets = MyAssets::default();
+    my_assets.idle_front = asset_server.load("frog_idle_front.png");
+    my_assets.idle_back = asset_server.load("frog_idle_back.png");
+    my_assets.idle_left = asset_server.load("frog_idle_left.png");
 
     let front_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
-    let back_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
-    let left_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    my_assets.layout = atlases.add(front_atlas);
 
-    let front_handle = atlases.add(front_atlas);
-    let back_handle = atlases.add(back_atlas);
-    let left_handle = atlases.add(left_atlas);
-
-    // Add handles of different views to plugin's resource
-    animation2d.insert(
-        Actor::Frog as u64,
-        HashMap::from([(
-            Action::Idle as u16,
-            ViewTextures::from(vec![
-                (
-                    Angle::Front,
-                    ViewSprite {
-                        layout: front_handle.clone(),
-                        image: front_image.clone(),
-                    },
-                ),
-                (
-                    Angle::Back,
-                    ViewSprite {
-                        layout: back_handle,
-                        image: back_image,
-                    },
-                ),
-                (
-                    Angle::Left,
-                    ViewSprite {
-                        layout: left_handle,
-                        image: left_image,
-                    },
-                ),
-            ]),
-        )]),
-    );
+    // Load into collection
+    animation2d.load_asset_loader(&my_assets);
 }
 
 fn setup(
@@ -144,12 +129,12 @@ fn setup(
 
     // Spawn frog
     let texture_atlas = TextureAtlas {
-        layout: front_handle.layout.clone(),
+        layout: front_handle.layout.as_ref().unwrap().clone(),
         index: 0,
     };
     commands.spawn((
         Sprite3d {
-            image: front_handle.image.clone(),
+            image: front_handle.image.as_ref().unwrap().clone(),
             pixels_per_metre: 8.,
             transform: Transform {
                 translation: Vec3::new(0., 0.85, 0.),
@@ -194,7 +179,7 @@ fn input(
         if action != act.action || direction != act.angle {
             act.action = action;
             act.angle = direction;
-            // Send event to change to another sprite sheet of another view
+            // Send event to change to sprite sheet of another view
             action_event.send(ViewChanged { entity: e });
         }
     }

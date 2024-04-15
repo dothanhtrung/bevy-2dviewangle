@@ -43,7 +43,7 @@ pub struct MyAssets {
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "front", handle = "atlas", angle = "any")]
+    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
 
@@ -54,7 +54,7 @@ fn main() {
                 .set(ImagePlugin::default_nearest())
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: String::from("2D demo"),
+                        title: String::from("2D demo with asset loader"),
                         resolution: WindowResolution::new(256., 256.),
                         ..default()
                     }),
@@ -79,6 +79,7 @@ fn setup(
     mut animation2d: ResMut<ActorsTextures>,
     my_assets: Res<MyAssets>,
 ) {
+    // Load into collection
     animation2d.load_asset_loader(my_assets.as_ref());
 
     commands.spawn(Camera2dBundle::default());
@@ -128,7 +129,7 @@ fn input(
         if action != act.action || direction != act.angle {
             act.action = action;
             act.angle = direction;
-            // Send event to change to another sprite sheet of another view
+            // Send event to change to sprite sheet of another view
             action_event.send(ViewChanged { entity: e });
         }
     }
