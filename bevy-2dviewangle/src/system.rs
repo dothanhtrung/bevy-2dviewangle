@@ -41,7 +41,7 @@ pub fn view_changed_event(
             #[cfg(feature = "3d")]
             if let (Some(mat), Some(atlas)) = (s.2, atlas) {
                 if atlas.image.is_some() {
-                    let material = mats.get_mut(&*mat).unwrap();
+                    let material = mats.get_mut(mat).unwrap();
                     material.base_color_texture = Some(atlas.image.as_ref().unwrap().clone());
                 }
             }
