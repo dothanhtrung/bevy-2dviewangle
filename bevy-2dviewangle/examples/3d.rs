@@ -4,8 +4,7 @@ use bevy::window::WindowResolution;
 use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin,
-    ViewChanged,
+    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin, ViewChanged,
 };
 
 // There may be many actors: player, animal, npc, ...
@@ -47,18 +46,14 @@ enum GameState {
 
 fn main() {
     App::new()
-        .add_plugins(
-            DefaultPlugins
-                .set(ImagePlugin::default_nearest())
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: String::from("3D demo"),
-                        resolution: WindowResolution::new(256., 256.),
-                        ..default()
-                    }),
-                    ..default()
-                }),
-        )
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
+            primary_window: Some(Window {
+                title: String::from("3D demo"),
+                resolution: WindowResolution::new(256., 256.),
+                ..default()
+            }),
+            ..default()
+        }))
         // Add the plugin
         .add_plugins(View2DAnglePlugin)
         .add_plugins(Sprite3dPlugin)
@@ -74,13 +69,13 @@ fn load_texture(
     mut animation2d: ResMut<ActorsTextures>,
     mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let mut my_assets = MyAssets::default();
-    my_assets.idle_front = asset_server.load("frog_idle_front.png");
-    my_assets.idle_back = asset_server.load("frog_idle_back.png");
-    my_assets.idle_left = asset_server.load("frog_idle_left.png");
-
-    let front_atlas = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
-    my_assets.layout = atlases.add(front_atlas);
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let my_assets = MyAssets {
+        idle_front: asset_server.load("frog_idle_front.png"),
+        idle_back: asset_server.load("frog_idle_back.png"),
+        idle_left: asset_server.load("frog_idle_left.png"),
+        layout: atlases.add(layout),
+    };
 
     // Load into collection
     animation2d.load_asset_loader(&my_assets);
