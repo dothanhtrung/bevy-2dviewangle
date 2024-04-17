@@ -3,8 +3,8 @@
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 use syn::punctuated::Punctuated;
+use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
 #[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
@@ -13,9 +13,7 @@ pub fn actors_textures_derive(input: TokenStream) -> TokenStream {
     impl_actors_textures(ast).unwrap_or_default().into()
 }
 
-fn impl_actors_textures(
-    ast: syn::DeriveInput,
-) -> Result<proc_macro2::TokenStream, Vec<syn::Error>> {
+fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStream, Vec<syn::Error>> {
     let struct_name = &ast.ident;
 
     if let Data::Struct(data_struct) = &ast.data {
@@ -34,43 +32,30 @@ fn impl_actors_textures(
                     .iter()
                     .filter(|attribute| attribute.path().is_ident(TEXTUREVIEW_ATTRIBUTE))
                 {
-                    let view_meta_list =
-                        attr.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated);
+                    let view_meta_list = attr.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated);
 
                     for attribute in view_meta_list.unwrap() {
                         match attribute {
                             Meta::NameValue(named_value) if named_value.path.is_ident("actor") => {
-                                if let Expr::Lit(ExprLit {
-                                    lit: Lit::Int(key), ..
-                                }) = &named_value.value
-                                {
+                                if let Expr::Lit(ExprLit { lit: Lit::Int(key), .. }) = &named_value.value {
                                     let value = key.base10_parse::<u64>().unwrap();
                                     actor_value = quote! {Some(#value)};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
-                                if let Expr::Lit(ExprLit {
-                                    lit: Lit::Int(key), ..
-                                }) = &named_value.value
-                                {
+                                if let Expr::Lit(ExprLit { lit: Lit::Int(key), .. }) = &named_value.value {
                                     let value = key.base10_parse::<u16>().unwrap();
                                     action_value = quote! {Some(#value)};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
-                                if let Expr::Lit(ExprLit {
-                                    lit: Lit::Str(key), ..
-                                }) = &named_value.value
-                                {
+                                if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
                                     let value = key.value();
                                     angle_value = quote! {Some(#value.to_string())};
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("handle") => {
-                                if let Expr::Lit(ExprLit {
-                                    lit: Lit::Str(key), ..
-                                }) = &named_value.value
-                                {
+                                if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
                                     type_value = key.value();
                                 }
                             }
@@ -86,19 +71,25 @@ fn impl_actors_textures(
                 }
 
                 quote! {
-                    FieldInfo {
-                        actor: #actor_value,
-                        action: #action_value,
-                        angle: #angle_value,
-                        image: #image_value,
-                        atlas_layout: #atlas_layout_value,
-                    }
+                    (
+                        #actor_value,
+                        #action_value,
+                        #angle_value,
+                        #image_value,
+                        #atlas_layout_value,
+                    )
                 }
             });
             let expanded = quote! {
                 #[automatically_derived]
                 impl ActorsTexturesCollection for #struct_name {
-                    fn get_all(&self) -> Vec<FieldInfo> {
+                    fn get_all(&self) -> Vec<(
+                        Option<u64>,
+                        Option<u16>,
+                        Option<String>,
+                        Option<&Handle<Image>>,
+                        Option<&Handle<TextureAtlasLayout>>,
+                    )> {
                         vec![#( #field_info ),*]
                     }
                 }

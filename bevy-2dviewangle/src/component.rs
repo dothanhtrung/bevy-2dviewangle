@@ -7,17 +7,16 @@ use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, 
 use bevy::sprite::TextureAtlasLayout;
 pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 
-#[derive(Default)]
-pub struct FieldInfo<'a> {
-    pub actor: Option<u64>,
-    pub action: Option<u16>,
-    pub angle: Option<String>,
-    pub image: Option<&'a Handle<Image>>,
-    pub atlas_layout: Option<&'a Handle<TextureAtlasLayout>>,
-}
-
 pub trait ActorsTexturesCollection {
-    fn get_all(&self) -> Vec<FieldInfo>;
+    fn get_all(
+        &self,
+    ) -> Vec<(
+        Option<u64>,
+        Option<u16>,
+        Option<String>,
+        Option<&Handle<Image>>,
+        Option<&Handle<TextureAtlasLayout>>,
+    )>;
 }
 
 #[derive(Default, Clone, Copy, Eq, PartialEq, Hash)]
@@ -72,13 +71,12 @@ impl ViewTextures {
 
 impl ActorsTextures {
     pub fn load_asset_loader<T: ActorsTexturesCollection>(&mut self, loader: &T) {
-        let fields = loader.get_all();
         let mut actor_id = 0;
         let mut action_id = 0;
-        for field in fields {
-            actor_id = field.actor.unwrap_or(actor_id);
-            action_id = field.action.unwrap_or(action_id);
-            let field_angle = match field.angle.unwrap_or_default().as_str() {
+        for (actor, action, angle, image, atlas_layout) in loader.get_all() {
+            actor_id = actor.unwrap_or(actor_id);
+            action_id = action.unwrap_or(action_id);
+            let field_angle = match angle.unwrap_or_default().as_str() {
                 "front" => Angle::Front,
                 "back" => Angle::Back,
                 "left" => Angle::Left,
@@ -114,14 +112,14 @@ impl ActorsTextures {
                 sprite = action.get_mut(&field_angle).unwrap();
             }
 
-            if let Some(image) = field.image {
-                sprite.image = Some(image.clone());
+            if let Some(image_handle) = image {
+                sprite.image = Some(image_handle.clone());
             } else if any.is_some() {
                 sprite.image = any.as_ref().unwrap().image.clone();
             }
 
-            if let Some(atlas_layout) = field.atlas_layout {
-                sprite.layout = Some(atlas_layout.clone());
+            if let Some(atlas_layout_handle) = atlas_layout {
+                sprite.layout = Some(atlas_layout_handle.clone());
             } else if any.is_some() {
                 sprite.layout = any.unwrap().layout.clone();
             }

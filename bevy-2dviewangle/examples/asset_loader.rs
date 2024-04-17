@@ -1,13 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_asset_loader::prelude::{
-    AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt,
-};
+use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin,
-    ViewChanged,
-};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin, ViewChanged};
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
 enum MyStates {
@@ -49,18 +44,14 @@ pub struct MyAssets {
 
 fn main() {
     App::new()
-        .add_plugins(
-            DefaultPlugins
-                .set(ImagePlugin::default_nearest())
-                .set(WindowPlugin {
-                    primary_window: Some(Window {
-                        title: String::from("2D demo with asset loader"),
-                        resolution: WindowResolution::new(256., 256.),
-                        ..default()
-                    }),
-                    ..default()
-                }),
-        )
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
+            primary_window: Some(Window {
+                title: String::from("2D demo with asset loader"),
+                resolution: WindowResolution::new(256., 256.),
+                ..default()
+            }),
+            ..default()
+        }))
         .init_state::<MyStates>()
         .add_loading_state(
             LoadingState::new(MyStates::AssetLoading)
@@ -74,11 +65,7 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    mut animation2d: ResMut<ActorsTextures>,
-    my_assets: Res<MyAssets>,
-) {
+fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_assets: Res<MyAssets>) {
     // Load into collection
     animation2d.load_asset_loader(my_assets.as_ref());
 

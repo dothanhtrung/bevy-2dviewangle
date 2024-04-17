@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 
-use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin, ViewChanged,
-};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin, ViewChanged};
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]

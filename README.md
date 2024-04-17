@@ -20,7 +20,7 @@ Quick Start
 
 ```rust
 use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin,
+    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin,
     ViewChanged,
 };
 
@@ -70,6 +70,18 @@ fn setup(
 
     // Load into collection
     animation2d.load_asset_loader(&my_assets);
+
+    commands.spawn((
+        SpriteSheetBundle {
+            ...
+        },
+        // Specify actor for entity
+        DynamicActor {
+            actor: Actor::Frog as u64,
+            animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
+            ..default()
+        },
+    ));
     ...
 }
 

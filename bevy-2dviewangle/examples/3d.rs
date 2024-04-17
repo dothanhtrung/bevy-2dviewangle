@@ -3,9 +3,7 @@ use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
 use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
-use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, FieldInfo, View2DAnglePlugin, ViewChanged,
-};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin, ViewChanged};
 
 // There may be many actors: player, animal, npc, ...
 #[repr(u64)]
