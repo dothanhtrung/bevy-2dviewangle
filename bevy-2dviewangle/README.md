@@ -24,12 +24,6 @@ use bevy_2dviewangle::{
     ViewChanged,
 };
 
-// Each actor may have many actions: idle, walk, run, fight, ...
-#[repr(u16)]
-enum Action {
-    Idle,
-}
-
 // Struct to load spritesheet
 #[derive(ActorsTexturesCollection, Default)]
 struct MyAssets {
@@ -55,12 +49,7 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
-    mut animation2d: ResMut<ActorsTextures>,
-) {
+fn setup(...) {
     let mut my_assets = MyAssets::default();
     my_assets.idle_front = asset_server.load("frog_idle_front.png");
     my_assets.idle_back = asset_server.load("frog_idle_back.png");
@@ -77,26 +66,21 @@ fn setup(
         },
         // Specify actor for entity
         DynamicActor {
-            actor: Actor::Frog as u64,
+            actor: 0, // actor id
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
     ));
-    ...
 }
 
-fn input(
-    kb_input: Res<ButtonInput<KeyCode>>,
-    mut actors: Query<(&mut DynamicActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
-) {
+fn input(...) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;
         let mut direction = act.angle;
 
-        // Update action and direction of actor
+        // Update action id and direction of actor
         if if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = Action::Idle as u16;
+            action = 0;
             direction = Angle::Back;
         }
         ...
@@ -110,6 +94,8 @@ fn input(
     }
 }
 ```
+
+Please see in [examples](./examples) for more detail.
 
 This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
 
@@ -161,5 +147,5 @@ Please see [LICENSE](../LICENSE).
 
 | bevy | bevy_2dviewangle         |
 |------|--------------------------|
-| 0.13 | 0.2-0.3, branch `master` |
+| 0.13 | 0.2-0.4, branch `master` |
 | 0.12 | 0.1                      |

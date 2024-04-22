@@ -3,37 +3,11 @@ use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
 use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
-use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin, ViewChanged};
+use bevy_2dviewangle::{ActorsTextures, Angle, DynamicActor, View2DAnglePlugin};
 
-// There may be many actors: player, animal, npc, ...
-#[repr(u64)]
-enum Actor {
-    Frog,
-}
+use crate::common::{input, MyAssets};
 
-// Each actor may have many actions: idle, walk, run, fight, ...
-#[repr(u16)]
-enum Action {
-    Idle,
-}
-
-// Struct to load spritesheet
-#[derive(ActorsTexturesCollection, Default)]
-struct MyAssets {
-    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
-    pub idle_front: Handle<Image>,
-
-    // If not specify actor/action, the previous value will be used
-    #[textureview(angle = "back", handle = "image")]
-    pub idle_back: Handle<Image>,
-
-    #[textureview(angle = "left", handle = "image")]
-    pub idle_left: Handle<Image>,
-
-    // If angle is any, other angle which has not been defined will use this value
-    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
-    pub layout: Handle<TextureAtlasLayout>,
-}
+mod common;
 
 #[derive(States, Hash, Clone, PartialEq, Eq, Debug, Default)]
 enum GameState {
@@ -86,9 +60,9 @@ fn setup(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let front_handle = animation2d
-        .get(&(Actor::Frog as u64))
+        .get(&0)
         .unwrap()
-        .get(&(Action::Idle as u16))
+        .get(&0)
         .unwrap()
         .get(&Angle::Front)
         .unwrap();
@@ -138,42 +112,9 @@ fn setup(
         .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
         // Specify actor for entity
         DynamicActor {
-            actor: Actor::Frog as u64,
+            actor: 0, // actor id
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
     ));
-}
-
-fn input(
-    kb_input: Res<ButtonInput<KeyCode>>,
-    mut actors: Query<(&mut DynamicActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
-) {
-    for (mut act, e) in actors.iter_mut() {
-        let mut action = act.action;
-        let mut direction = act.angle;
-
-        // Update action and direction of actor
-        if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
-            action = Action::Idle as u16;
-            direction = Angle::Left;
-        } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
-            action = Action::Idle as u16;
-            direction = Angle::Right;
-        } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = Action::Idle as u16;
-            direction = Angle::Back;
-        } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
-            action = Action::Idle as u16;
-            direction = Angle::Front;
-        }
-
-        if action != act.action || direction != act.angle {
-            act.action = action;
-            act.angle = direction;
-            // Send event to change to sprite sheet of another view
-            action_event.send(ViewChanged { entity: e });
-        }
-    }
 }

@@ -2,25 +2,17 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin, ViewChanged};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, DynamicActor, View2DAnglePlugin};
+
+use crate::common::input;
+
+mod common;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
 enum MyStates {
     #[default]
     AssetLoading,
     Next,
-}
-
-// There may be many actors: player, animal, npc, ...
-#[repr(u64)]
-enum Actor {
-    Frog,
-}
-
-// Each actor may have many actions: idle, walk, run, fight, ...
-#[repr(u16)]
-enum Action {
-    Idle,
 }
 
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
@@ -82,42 +74,9 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_ass
         },
         // Specify actor for entity
         DynamicActor {
-            actor: Actor::Frog as u64,
+            actor: 0, // actor id
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
     ));
-}
-
-fn input(
-    kb_input: Res<ButtonInput<KeyCode>>,
-    mut actors: Query<(&mut DynamicActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
-) {
-    for (mut act, e) in actors.iter_mut() {
-        let mut action = act.action;
-        let mut direction = act.angle;
-
-        // Update action and direction of actor
-        if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
-            action = Action::Idle as u16;
-            direction = Angle::Left;
-        } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
-            action = Action::Idle as u16;
-            direction = Angle::Right;
-        } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = Action::Idle as u16;
-            direction = Angle::Back;
-        } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
-            action = Action::Idle as u16;
-            direction = Angle::Front;
-        }
-
-        if action != act.action || direction != act.angle {
-            act.action = action;
-            act.angle = direction;
-            // Send event to change to sprite sheet of another view
-            action_event.send(ViewChanged { entity: e });
-        }
-    }
 }
