@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle_macro"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -8,6 +8,7 @@ repository = "https://gitlab.com/kimtinh/bevy-2dviewangle"
 keywords = ["bevy"]
 description = "Bevy plugin for easier to switch texture base on view angles (derive macro)"
 exclude = ["assets", "examples", ".cargo"]
+categories = ["game-development"]
 
 [lib]
 proc-macro = true
