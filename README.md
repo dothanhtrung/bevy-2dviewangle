@@ -3,6 +3,7 @@ bevy_2dviewangle
 
 [![crates.io](https://img.shields.io/crates/v/bevy_2dviewangle)](https://crates.io/crates/bevy_2dviewangle)
 [![docs.rs](https://docs.rs/bevy_2dviewangle/badge.svg)](https://docs.rs/bevy_2dviewangle)
+[![dependency status](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle)
 
 Bevy plugin to easier to switch texture base on view angles. Currently, support 8 view angles:
 
