@@ -18,7 +18,7 @@ pub struct MyAssets {
     pub idle_left: Handle<Image>,
 
     // If angle is any, other angle which has not been defined will use this value
-    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
+    #[textureview(angle = "any", handle = "atlas_layout")]
     pub layout: Handle<TextureAtlasLayout>,
 }
 
@@ -49,7 +49,7 @@ pub fn input(
         if action != act.action || direction != act.angle {
             act.action = action;
             act.angle = direction;
-            // Send event to change to sprite sheet of another view
+            // Send event to change to sprite sheet to another view
             action_event.send(ViewChanged { entity: e });
         }
     }

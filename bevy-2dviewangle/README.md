@@ -18,12 +18,16 @@ Bevy plugin to easier to switch texture base on view angles. Currently, support 
 Quick Start
 -----------
 
+Add plugin.
 ```rust
-use bevy_2dviewangle::{
-    ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin,
-    ViewChanged,
-};
+    App::new()
+        ...
+        .add_plugins(View2DAnglePlugin)
+        ...
+```
 
+Declare texture map with each actor and action with view angle.
+```rust
 // Struct to load spritesheet
 #[derive(ActorsTexturesCollection, Default)]
 struct MyAssets {
@@ -34,63 +38,26 @@ struct MyAssets {
     #[textureview(angle = "back", handle = "image")]
     pub idle_back: Handle<Image>,
 
+    #[textureview(angle = "front", handle = "atlas_layout")]
+    pub layout: Handle<TextureAtlasLayout>,
+    
     // If angle is any, other angle which has not been defined will use this value
-    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
+    #[textureview(angle = "any", handle = "atlas_layout")]
     pub layout: Handle<TextureAtlasLayout>,
 }
+```
 
-fn main() {
-    App::new()
-        ...
-        // Add the plugin
-        .add_plugins(View2DAnglePlugin)
-        .add_systems(Startup, setup)
-        .add_systems(Update, input)
-        .run();
-}
-
-fn setup(...) {
-    let mut my_assets = MyAssets::default();
-    my_assets.idle_front = asset_server.load("frog_idle_front.png");
-    my_assets.idle_back = asset_server.load("frog_idle_back.png");
-
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
-    my_assets.layout = texture_atlases.add(layout);
-
-    // Load into collection
-    animation2d.load_asset_loader(&my_assets);
-
-    commands.spawn((
-        SpriteSheetBundle {
-            ...
-        },
-        // Specify actor for entity
-        DynamicActor {
-            actor: 0, // actor id
-            animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
-            ..default()
-        },
-    ));
-}
-
-fn input(...) {
+Change the sprite sheet by sending event.
+```rust
+fn switch_sprite(
+    mut actors: Query<(&mut DynamicActor, Entity)>,
+    mut action_event: EventWriter<ViewChanged>,
+) {
     for (mut act, e) in actors.iter_mut() {
-        let mut action = act.action;
-        let mut direction = act.angle;
-
-        // Update action id and direction of actor
-        if if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = 0;
-            direction = Angle::Back;
-        }
-        ...
-
-        if action != act.action || direction != act.angle {
-            act.action = action;
-            act.angle = direction;
-            // Send event to change to spritesheet of another view
-            action_event.send(ViewChanged { entity: e });
-        }
+        act.action = new_action;
+        act.angle = new_direction;
+        // Send event to change to sprite sheet to another view
+        action_event.send(ViewChanged { entity: e });
     }
 }
 ```
@@ -115,7 +82,7 @@ pub struct MyAssets {
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
+    #[textureview(angle = "any", handle = "atlas_layout")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
 ```

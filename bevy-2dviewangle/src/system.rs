@@ -13,43 +13,52 @@ pub fn view_changed_event(
         &mut Transform,
         Option<&Handle<StandardMaterial>>,
         Option<&mut Handle<Image>>,
+        Option<&mut Handle<TextureAtlasLayout>>,
     )>,
     #[cfg(feature = "3d")] mut mats: ResMut<Assets<StandardMaterial>>,
     animation2d: Res<ActorsTextures>,
 ) {
     for event in events.read() {
-        if let Ok(s) = sprites.get_mut(event.entity) {
-            let mut view = s.0;
-            let mut transform = s.1;
-
+        if let Ok((mut view, mut transform, mat, handle, atlas_layout)) = sprites.get_mut(event.entity) {
             let action = view.action;
-            let mut atlas = animation2d[&view.actor][&action].get(&view.angle);
+            let mut viewsprite = animation2d[&view.actor][&action].get(&view.angle);
 
             if view.flipped {
                 transform.rotate_y(std::f64::consts::PI as f32);
                 view.flipped = false;
             }
 
-            if atlas.is_none() {
-                atlas = get_opposite_view(&animation2d[&view.actor][&action], view.angle);
-                if atlas.is_some() {
+            if viewsprite.is_none() {
+                viewsprite = get_opposite_view(&animation2d[&view.actor][&action], view.angle);
+                if viewsprite.is_some() {
                     transform.rotate_y(std::f64::consts::PI as f32);
                     view.flipped = true;
                 }
             }
 
+            if viewsprite.is_none() {
+                return;
+            }
+
+            let viewsprite = viewsprite.unwrap();
+
             #[cfg(feature = "3d")]
-            if let (Some(mat), Some(atlas)) = (s.2, atlas) {
-                if atlas.image.is_some() {
+            if let Some(mat) = mat {
+                if viewsprite.image.is_some() {
                     let material = mats.get_mut(mat).unwrap();
-                    material.base_color_texture = Some(atlas.image.as_ref().unwrap().clone());
+                    material.base_color_texture = Some(viewsprite.image.as_ref().unwrap().clone());
                 }
             }
 
             #[cfg(feature = "2d")]
-            if let (Some(mut handle), Some(atlas)) = (s.3, atlas) {
-                if atlas.image.is_some() {
-                    *handle = atlas.image.as_ref().unwrap().clone();
+            if let Some(mut handle) = handle {
+                if viewsprite.image.is_some() {
+                    *handle = viewsprite.image.as_ref().unwrap().clone();
+                }
+            }
+            if let Some(mut atlas_layout) = atlas_layout {
+                if viewsprite.layout.is_some() {
+                    *atlas_layout = viewsprite.layout.as_ref().unwrap().clone();
                 }
             }
         }
