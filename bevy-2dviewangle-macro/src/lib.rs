@@ -3,8 +3,8 @@
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::punctuated::Punctuated;
 use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+use syn::punctuated::Punctuated;
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
 #[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
@@ -25,7 +25,6 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 let mut angle_value = quote! {None};
                 let mut image_value = quote! {None};
                 let mut atlas_layout_value = quote! {None};
-                let mut type_value = String::new();
 
                 for attr in field
                     .attrs
@@ -54,19 +53,17 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                                     angle_value = quote! {Some(#value.to_string())};
                                 }
                             }
-                            Meta::NameValue(named_value) if named_value.path.is_ident("handle") => {
-                                if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    type_value = key.value();
-                                }
-                            }
                             _ => {}
                         }
                     }
                 }
 
-                match type_value.as_str() {
-                    "image" => image_value = quote! {Some(&self.#field_name)},
-                    "atlas_layout" => atlas_layout_value = quote! {Some(&self.#field_name)},
+                match &field.ty {
+                    ty if quote!(#ty).to_string() == "Handle < Image >" => image_value = quote! {Some(&self.#field_name)},
+                    ty if quote!(#ty).to_string() == "Handle < TextureAtlasLayout >" => {
+                        atlas_layout_value = quote! {Some(&self.#field_name)}
+                    }
+                    ty if quote!(#ty).to_string() != "Handle<TextureAtlasLayout>" => {println!("====== {}", quote!(#ty).to_string());}
                     _ => {}
                 }
 

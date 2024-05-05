@@ -18,19 +18,19 @@ enum MyStates {
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
-    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
+    #[textureview(actor = 0, action = 0, angle = "front")]
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
-    #[textureview(angle = "back", handle = "image")]
+    #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
     #[asset(path = "frog_idle_left.png")]
-    #[textureview(angle = "left", handle = "image")]
+    #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "front", handle = "atlas_layout", angle = "any")]
+    #[textureview(angle = "any", handle = "atlas_layout")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
 
