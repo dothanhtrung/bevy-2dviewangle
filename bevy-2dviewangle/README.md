@@ -31,18 +31,18 @@ Declare texture map with each actor and action with view angle.
 // Struct to load spritesheet
 #[derive(ActorsTexturesCollection, Default)]
 struct MyAssets {
-    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
+    #[textureview(actor = 0, action = 0, angle = "front")]
     pub idle_front: Handle<Image>,
 
     // If not specify actor/action, the previous value will be used
-    #[textureview(angle = "back", handle = "image")]
+    #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
-    #[textureview(angle = "front", handle = "atlas_layout")]
+    #[textureview(angle = "front")]
     pub layout: Handle<TextureAtlasLayout>,
     
     // If angle is any, other angle which has not been defined will use this value
-    #[textureview(angle = "any", handle = "atlas_layout")]
+    #[textureview(angle = "any")]
     pub layout: Handle<TextureAtlasLayout>,
 }
 ```
@@ -70,19 +70,19 @@ This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asse
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
-    #[textureview(actor = 0, action = 0, angle = "front", handle = "image")]
+    #[textureview(actor = 0, action = 0, angle = "front")]
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
-    #[textureview(angle = "back", handle = "image")]
+    #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
     #[asset(path = "frog_idle_left.png")]
-    #[textureview(angle = "left", handle = "image")]
+    #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "any", handle = "atlas_layout")]
+    #[textureview(angle = "any")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
 ```
