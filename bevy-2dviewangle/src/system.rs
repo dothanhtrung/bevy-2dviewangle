@@ -1,8 +1,11 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::{Assets, Handle};
-use bevy::prelude::{EventReader, Image, Query, Res, ResMut, StandardMaterial, Time, Transform};
+use bevy::prelude::{EventReader, Image, Query, Res, StandardMaterial, Time, Transform};
 use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
+
+#[cfg(feature = "3d")]
+use bevy::prelude::ResMut;
 
 use crate::component::*;
 
@@ -19,7 +22,7 @@ pub fn view_changed_event(
     animation2d: Res<ActorsTextures>,
 ) {
     for event in events.read() {
-        if let Ok((mut view, mut transform, mat, handle, atlas_layout)) = sprites.get_mut(event.entity) {
+        if let Ok((mut view, mut transform, _mat, _handle, atlas_layout)) = sprites.get_mut(event.entity) {
             let action = view.action;
             let mut viewsprite = animation2d[&view.actor][&action].get(&view.angle);
 
@@ -43,7 +46,7 @@ pub fn view_changed_event(
             let viewsprite = viewsprite.unwrap();
 
             #[cfg(feature = "3d")]
-            if let Some(mat) = mat {
+            if let Some(mat) = _mat {
                 if viewsprite.image.is_some() {
                     let material = mats.get_mut(mat).unwrap();
                     material.base_color_texture = Some(viewsprite.image.as_ref().unwrap().clone());
@@ -51,7 +54,7 @@ pub fn view_changed_event(
             }
 
             #[cfg(feature = "2d")]
-            if let Some(mut handle) = handle {
+            if let Some(mut handle) = _handle {
                 if viewsprite.image.is_some() {
                     *handle = viewsprite.image.as_ref().unwrap().clone();
                 }
