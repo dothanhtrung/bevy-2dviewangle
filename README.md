@@ -63,7 +63,7 @@ fn switch_sprite(
 }
 ```
 
-Please see in [examples](./bevy-2dviewangle/examples) for more detail.
+Please see in [examples](./examples) for more detail.
 
 This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
 
@@ -95,17 +95,17 @@ Examples
 
 ![2d demo](https://i.imgur.com/7fRkkg3.mp4)
 
-[2d example](bevy-2dviewangle/examples/2d.rs)
+[2d example](examples/2d.rs)
 
 ### 3d
 
 ![3d demo](https://i.imgur.com/i3JnW9K.mp4)
 
-[3d example](bevy-2dviewangle/examples/3d.rs)
+[3d example](examples/3d.rs)
 
 ### Use with bevy_asset_loader
 
-[asset loader example](bevy-2dviewangle/examples/asset_loader.rs)
+[asset loader example](examples/asset_loader.rs)
 
 ## License
 
