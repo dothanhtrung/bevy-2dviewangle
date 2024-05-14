@@ -5,31 +5,18 @@ bevy_2dviewangle
 [![docs.rs](https://docs.rs/bevy_2dviewangle/badge.svg)](https://docs.rs/bevy_2dviewangle)
 [![dependency status](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle)
 
-Bevy plugin to easier to switch texture base on view angles. Currently, support 8 view angles:
+![](https://i.imgur.com/7fRkkg3.mp4)
 
-* front
-* back
-* left
-* right
-* front_left
-* front_right
-* back_left
-* back_right
 
-Quick Start
------------
+![](https://i.imgur.com/i3JnW9K.mp4)
 
-Add plugin.
+Bevy plugin to easier to manage and switch texture base on view angles.
+
+
+## Quickstart
+
 ```rust
-    App::new()
-        ...
-        .add_plugins(View2DAnglePlugin)
-        ...
-```
-
-Declare texture map with each actor and action with view angle.
-```rust
-// Struct to load spritesheet
+// Struct to store sprite sheet
 #[derive(ActorsTexturesCollection, Default)]
 struct MyAssets {
     #[textureview(actor = "player", action = "idle", angle = "front")]
@@ -41,16 +28,16 @@ struct MyAssets {
 
     // If the angle "right" is not defined, it will be flipped base on the angle "left" image
     #[textureview(angle = "left")]
-    pub layout: Handle<TextureAtlasLayout>,
+    pub idle_left_layout: Handle<TextureAtlasLayout>,
     
     // If angle is any, other angle which has not been defined will use this value
     #[textureview(angle = "any")]
-    pub layout: Handle<TextureAtlasLayout>,
+    pub idle_any_layout: Handle<TextureAtlasLayout>,
 }
 ```
 
-Change the sprite sheet by sending event.
 ```rust
+// Change the sprite sheet by sending event
 fn switch_sprite(
     mut actors: Query<(&mut DynamicActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
@@ -84,32 +71,15 @@ pub struct MyAssets {
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
     #[textureview(angle = "any")]
-    pub front_layout: Handle<TextureAtlasLayout>,
+    pub any_layout: Handle<TextureAtlasLayout>,
 }
 ```
 
-Examples
---------
-
-### 2d
-
-![2d demo](https://i.imgur.com/7fRkkg3.mp4)
-
-[2d example](examples/2d.rs)
-
-### 3d
-
-![3d demo](https://i.imgur.com/i3JnW9K.mp4)
-
-[3d example](examples/3d.rs)
-
-### Use with bevy_asset_loader
-
-[asset loader example](examples/asset_loader.rs)
 
 ## License
 
 Please see [LICENSE](./LICENSE).
+
 
 ## Compatible Bevy Versions
 

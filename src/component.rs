@@ -112,7 +112,7 @@ pub struct ActorsTextures(HashMap<u64, HashMap<u16, ViewTextures>>);
 ///     mut action_event: EventWriter<ViewChanged>,
 /// ) {
 ///     for (mut act, e) in actors.iter_mut() {
-///             act.action = Action::Run as u16;
+///             act.action = Action::Idle as u16;
 ///             act.angle = Angle::Left;
 ///             // Send event to change to sprite sheet to another view
 ///             action_event.send(ViewChanged { entity: e });
