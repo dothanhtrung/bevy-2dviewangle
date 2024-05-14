@@ -9,7 +9,10 @@ use bevy::prelude::ResMut;
 
 use crate::component::*;
 
-pub fn view_changed_event(
+/// Check on `ViewChanged` event and change to corresponding spritesheet.
+/// If spritesheet for an angle does not exist, it will try to flip the spritesheet of the opposite angle.
+/// If the opposite is not available, spritesheet will not change.
+pub(crate) fn view_changed_event(
     mut events: EventReader<ViewChanged>,
     mut sprites: Query<(
         &mut DynamicActor,
@@ -80,7 +83,7 @@ fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> Option<&ViewSp
     }
 }
 
-pub fn dynamic_actor_animate(
+pub(crate) fn dynamic_actor_animate(
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
     mut query: Query<(&mut DynamicActor, Option<&mut TextureAtlas>)>,

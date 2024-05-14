@@ -32,14 +32,15 @@ Declare texture map with each actor and action with view angle.
 // Struct to load spritesheet
 #[derive(ActorsTexturesCollection, Default)]
 struct MyAssets {
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = "player", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
 
     // If not specify actor/action, the previous value will be used
     #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
-    #[textureview(angle = "front")]
+    // If the angle "right" is not defined, it will be flipped base on the angle "left" image
+    #[textureview(angle = "left")]
     pub layout: Handle<TextureAtlasLayout>,
     
     // If angle is any, other angle which has not been defined will use this value
@@ -55,9 +56,8 @@ fn switch_sprite(
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
-        act.action = new_action;
-        act.angle = new_direction;
-        // Send event to change to sprite sheet to another view
+        act.action = Action::Idle;
+        act.angle = Angle::Right;
         action_event.send(ViewChanged { entity: e });
     }
 }
@@ -71,7 +71,7 @@ This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asse
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = "frog", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
@@ -115,5 +115,5 @@ Please see [LICENSE](./LICENSE).
 
 | bevy | bevy_2dviewangle         |
 |------|--------------------------|
-| 0.13 | 0.2-0.4, branch `master` |
+| 0.13 | 0.2-0.5, branch `master` |
 | 0.12 | 0.1                      |

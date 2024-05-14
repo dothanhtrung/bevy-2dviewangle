@@ -11,12 +11,8 @@
 //! * back_left
 //! * back_right
 //!
-//! Examples
-//! --------
 //!
-//! * [2d example](https://gitlab.com/kimtinh/bevy-2dviewangle/-/blob/master/examples/2d.rs)
-//! * [3d example](https://gitlab.com/kimtinh/bevy-2dviewangle/-/blob/master/examples/3d.rs)
-//! * [asset loader example](https://gitlab.com/kimtinh/bevy-2dviewangle/-/blob/master/examples/asset_loader.rs)
+//! [Examples](.master/examples)
 
 use bevy::app::{App, Plugin, Update};
 

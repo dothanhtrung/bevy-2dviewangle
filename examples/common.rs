@@ -5,6 +5,8 @@ use bevy::prelude::{Entity, EventWriter, Image, KeyCode, Query, Res, TextureAtla
 use bevy_2dviewangle::{ActorsTexturesCollection, Angle, DynamicActor, ViewChanged};
 
 // Struct to load spritesheet
+// The derive macro will provide these two enums too:
+// `enum Actor { Frog }` and `enum Action { Idle }`
 #[derive(ActorsTexturesCollection, Default)]
 pub struct MyAssets {
     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -14,6 +16,7 @@ pub struct MyAssets {
     #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
+    // If the angle "right" is not defined, it will be flipped base on the angle "left" image
     #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
 
