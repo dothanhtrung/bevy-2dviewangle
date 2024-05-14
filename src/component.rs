@@ -13,7 +13,7 @@ pub trait ActorsTexturesCollection {
     ) -> Vec<(
         Option<u64>,
         Option<u16>,
-        Option<String>,
+        Option<Angle>,
         Option<&Handle<Image>>,
         Option<&Handle<TextureAtlasLayout>>,
     )>;
@@ -76,17 +76,7 @@ impl ActorsTextures {
         for (actor, action, angle, image, atlas_layout) in loader.get_all() {
             actor_id = actor.unwrap_or(actor_id);
             action_id = action.unwrap_or(action_id);
-            let field_angle = match angle.unwrap_or_default().as_str() {
-                "front" => Angle::Front,
-                "back" => Angle::Back,
-                "left" => Angle::Left,
-                "right" => Angle::Right,
-                "front_left" => Angle::FrontLeft,
-                "front_right" => Angle::FrontRight,
-                "back_left" => Angle::BackLeft,
-                "back_right" => Angle::BackRight,
-                _ => Angle::Any,
-            };
+            let field_angle = angle.unwrap_or_default();
             let actor;
             if let Some(_actor) = self.get_mut(&actor_id) {
                 actor = _actor;

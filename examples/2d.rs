@@ -3,7 +3,7 @@ use bevy::window::WindowResolution;
 
 use bevy_2dviewangle::{ActorsTextures, DynamicActor, View2DAnglePlugin};
 
-use crate::common::{input, MyAssets};
+use crate::common::{input, Actor, MyAssets};
 
 mod common;
 
@@ -54,7 +54,7 @@ fn setup(
         },
         // Specify actor for entity
         DynamicActor {
-            actor: 0, // actor id
+            actor: Actor::Frog as u64,
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

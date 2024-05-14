@@ -1,10 +1,36 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use proc_macro::TokenStream;
+use std::collections::HashMap;
 
 use quote::quote;
-use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 use syn::punctuated::Punctuated;
+use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+
+macro_rules! enumize {
+    ($k: expr, $e: expr, $m: expr, $c: expr, $v: expr) => {{
+        let num;
+        let key_str = capitalize_first_letter(&$k.value());
+        if $m.contains_key(&key_str) {
+            num = *$m.get(&key_str).unwrap();
+        } else {
+            $c += 1;
+            let variant_name = syn::Ident::new(&key_str, $k.span());
+            $e.push(quote! {#variant_name});
+            $m.insert(key_str, $c);
+            num = $c;
+        }
+        $v = quote! {Some(#num)};
+    }}
+}
+
+fn capitalize_first_letter(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+    }
+}
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
 #[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
@@ -18,7 +44,15 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
 
     if let Data::Struct(data_struct) = &ast.data {
         if let Fields::Named(fields) = &data_struct.fields {
-            let field_info = fields.named.iter().map(|field| {
+            let mut fields_info = Vec::new();
+            let mut actor_enum = Vec::new();
+            let mut actor_map = HashMap::new();
+            let mut actor_count: u64 = 0;
+            let mut action_enum = Vec::new();
+            let mut action_map = HashMap::new();
+            let mut action_count: u16 = 0;
+
+            for field in fields.named.iter() {
                 let field_name = field.ident.as_ref().unwrap();
                 let mut actor_value = quote! {None};
                 let mut action_value = quote! {None};
@@ -36,21 +70,20 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                     for attribute in view_meta_list.unwrap() {
                         match attribute {
                             Meta::NameValue(named_value) if named_value.path.is_ident("actor") => {
-                                if let Expr::Lit(ExprLit { lit: Lit::Int(key), .. }) = &named_value.value {
-                                    let value = key.base10_parse::<u64>().unwrap();
-                                    actor_value = quote! {Some(#value)};
+                                if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
+                                    enumize!(key, actor_enum, actor_map, actor_count, actor_value);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
-                                if let Expr::Lit(ExprLit { lit: Lit::Int(key), .. }) = &named_value.value {
-                                    let value = key.base10_parse::<u16>().unwrap();
-                                    action_value = quote! {Some(#value)};
+                                if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
+                                    enumize!(key, action_enum, action_map, action_count, action_value);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    let value = key.value();
-                                    angle_value = quote! {Some(#value.to_string())};
+                                    let key_str = capitalize_first_letter(&key.value());
+                                    let variant_name = syn::Ident::new(&key_str, key.span());
+                                    angle_value = quote! {Some(Angle::#variant_name)};
                                 }
                             }
                             _ => {}
@@ -59,15 +92,19 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 }
 
                 match &field.ty {
-                    ty if quote!(#ty).to_string() == "Handle < Image >" => image_value = quote! {Some(&self.#field_name)},
+                    ty if quote!(#ty).to_string() == "Handle < Image >" => {
+                        image_value = quote! {Some(&self.#field_name)}
+                    }
                     ty if quote!(#ty).to_string() == "Handle < TextureAtlasLayout >" => {
                         atlas_layout_value = quote! {Some(&self.#field_name)}
                     }
-                    ty if quote!(#ty).to_string() != "Handle<TextureAtlasLayout>" => {println!("====== {}", quote!(#ty).to_string());}
+                    ty if quote!(#ty).to_string() != "Handle<TextureAtlasLayout>" => {
+                        println!("====== {}", quote!(#ty).to_string());
+                    }
                     _ => {}
                 }
 
-                quote! {
+                let field_info = quote! {
                     (
                         #actor_value,
                         #action_value,
@@ -75,19 +112,38 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                         #image_value,
                         #atlas_layout_value,
                     )
-                }
-            });
+                };
+
+                fields_info.push(field_info);
+            }
+
             let expanded = quote! {
+                #[derive(Default, Eq, PartialEq)]
+                #[repr(u64)]
+                pub enum Actor {
+                    #[default]
+                    Any,
+                    #( #actor_enum ),*
+                }
+
+                #[derive(Default, Eq, PartialEq)]
+                #[repr(u16)]
+                pub enum Action {
+                    #[default]
+                    Any,
+                    #( #action_enum ),*
+                }
+
                 #[automatically_derived]
                 impl ActorsTexturesCollection for #struct_name {
                     fn get_all(&self) -> Vec<(
                         Option<u64>,
                         Option<u16>,
-                        Option<String>,
+                        Option<Angle>,
                         Option<&Handle<Image>>,
                         Option<&Handle<TextureAtlasLayout>>,
                     )> {
-                        vec![#( #field_info ),*]
+                        vec![#( #fields_info ),*]
                     }
                 }
             };

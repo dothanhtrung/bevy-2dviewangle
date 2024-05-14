@@ -5,7 +5,7 @@ use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{ActorsTextures, Angle, DynamicActor, View2DAnglePlugin};
 
-use crate::common::{input, MyAssets};
+use crate::common::{input, Action, Actor, MyAssets};
 
 mod common;
 
@@ -60,9 +60,9 @@ fn setup(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let front_handle = animation2d
-        .get(&0)
+        .get(&(Actor::Frog as u64))
         .unwrap()
-        .get(&0)
+        .get(&(Action::Idle as u16))
         .unwrap()
         .get(&Angle::Front)
         .unwrap();
@@ -112,7 +112,7 @@ fn setup(
         .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
         // Specify actor for entity
         DynamicActor {
-            actor: 0, // actor id
+            actor: Actor::Frog as u64,
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

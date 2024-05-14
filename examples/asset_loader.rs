@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, DynamicActor, View2DAnglePlugin};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin};
 
 use crate::common::input;
 
@@ -18,7 +18,7 @@ enum MyStates {
 #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = "frog", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
 
     #[asset(path = "frog_idle_back.png")]
@@ -30,7 +30,7 @@ pub struct MyAssets {
     pub idle_left: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
-    #[textureview(angle = "any", handle = "atlas_layout")]
+    #[textureview(angle = "any")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
 
@@ -74,7 +74,7 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_ass
         },
         // Specify actor for entity
         DynamicActor {
-            actor: 0, // actor id
+            actor: Actor::Frog as u64,
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

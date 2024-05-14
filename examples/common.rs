@@ -7,7 +7,7 @@ use bevy_2dviewangle::{ActorsTexturesCollection, Angle, DynamicActor, ViewChange
 // Struct to load spritesheet
 #[derive(ActorsTexturesCollection, Default)]
 pub struct MyAssets {
-    #[textureview(actor = 0, action = 0, angle = "front")]
+    #[textureview(actor = "frog", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
 
     // If not specify actor/action, the previous value will be used
@@ -33,16 +33,16 @@ pub fn input(
 
         // Update action id and direction of actor
         if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
-            action = 0;
+            action = Action::Idle as u16;
             direction = Angle::Left;
         } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
-            action = 0;
+            action = Action::Idle as u16;
             direction = Angle::Right;
         } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = 0;
+            action = Action::Idle as u16;
             direction = Angle::Back;
         } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
-            action = 0;
+            action = Action::Idle as u16;
             direction = Angle::Front;
         }
 
