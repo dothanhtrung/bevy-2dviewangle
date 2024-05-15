@@ -78,12 +78,14 @@ pub enum Angle {
     BackRight,
 }
 
+/// Sprite sheet for one angle, store image and atlas layout
 #[derive(Default, Clone)]
 pub struct ViewSprite {
     pub layout: Option<Handle<TextureAtlasLayout>>,
     pub image: Option<Handle<Image>>,
 }
 
+/// Map of Angle and its ViewSprite
 #[derive(Default, Deref, DerefMut)]
 pub struct ViewTextures(HashMap<Angle, ViewSprite>);
 
