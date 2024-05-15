@@ -27,9 +27,9 @@ struct MyAssets {
     #[textureview(angle = "back")]
     pub idle_back: Handle<Image>,
 
-    // If the angle "right" is not defined, it will be flipped base on the angle "left" image
+    // If the angle "right" is not defined, it will be flipped base on the "left" image
     #[textureview(angle = "left")]
-    pub idle_left_layout: Handle<TextureAtlasLayout>,
+    pub idle_left: Handle<Image>,
     
     // If angle is any, other angle which has not been defined will use this value
     #[textureview(angle = "any")]
