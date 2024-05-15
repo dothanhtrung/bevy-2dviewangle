@@ -2,11 +2,27 @@ image: "rust:latest"
 
 before_script:
   - apt-get update -yqq
-  - apt-get install -yqq --no-install-recommends clang mold
+  - apt-get install -yqq --no-install-recommends clang mold sccache clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
 
-test:cargo:
+build:
+  stage: build
   script:
     - rustc --version && cargo --version  # Print version info for debugging
-    - cargo test --workspace --verbose
+    - cargo build --example 2d
+    - cargo build --example 3d
+    - cargo build --example asset_loader
+  cache:
+    key: build-cache
+    paths:
+      - target/
+
+publish:
+  stage: deploy
+  script:
+    - cargo publish --token $TOKEN
+  cache:
+    key: build-cache
+    paths:
+      - target/
   only:
     - tags

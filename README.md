@@ -4,6 +4,7 @@ bevy_2dviewangle
 [![crates.io](https://img.shields.io/crates/v/bevy_2dviewangle)](https://crates.io/crates/bevy_2dviewangle)
 [![docs.rs](https://docs.rs/bevy_2dviewangle/badge.svg)](https://docs.rs/bevy_2dviewangle)
 [![dependency status](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle)
+[![pipeline status](https://gitlab.com/kimtinh/bevy-2dviewangle/badges/master/pipeline.svg)](https://gitlab.com/kimtinh/bevy-2dviewangle/-/commits/master)
 
 ![](https://i.imgur.com/7fRkkg3.mp4)
 
