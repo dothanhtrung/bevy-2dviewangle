@@ -1,11 +1,10 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::{Assets, Handle};
-use bevy::prelude::{EventReader, Image, Query, Res, StandardMaterial, Time, Transform};
-use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
-
+use bevy::prelude::{EventReader, Image, Query, Res, Sprite, StandardMaterial, Time, Transform};
 #[cfg(feature = "3d")]
 use bevy::prelude::ResMut;
+use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
 
 use crate::component::*;
 
@@ -17,6 +16,7 @@ pub(crate) fn view_changed_event(
     mut sprites: Query<(
         &mut DynamicActor,
         &mut Transform,
+        Option<&mut Sprite>,
         Option<&Handle<StandardMaterial>>,
         Option<&mut Handle<Image>>,
         Option<&mut Handle<TextureAtlasLayout>>,
@@ -25,19 +25,27 @@ pub(crate) fn view_changed_event(
     animation2d: Res<ActorsTextures>,
 ) {
     for event in events.read() {
-        if let Ok((mut view, mut transform, _mat, _handle, atlas_layout)) = sprites.get_mut(event.entity) {
+        if let Ok((mut view, mut transform, mut sprite, _mat, _handle, atlas_layout)) = sprites.get_mut(event.entity) {
             let action = view.action;
             let mut viewsprite = animation2d[&view.actor][&action].get(&view.angle);
 
             if view.flipped {
-                transform.rotate_y(std::f64::consts::PI as f32);
+                if sprite.is_some() {
+                    sprite.as_mut().unwrap().flip_x = false;
+                } else {
+                    transform.rotate_y(std::f64::consts::PI as f32);
+                }
                 view.flipped = false;
             }
 
             if viewsprite.is_none() {
                 viewsprite = get_opposite_view(&animation2d[&view.actor][&action], view.angle);
                 if viewsprite.is_some() {
-                    transform.rotate_y(std::f64::consts::PI as f32);
+                    if let Some(mut sprite) = sprite {
+                        sprite.flip_x = true;
+                    } else {
+                        transform.rotate_y(std::f64::consts::PI as f32);
+                    }
                     view.flipped = true;
                 }
             }

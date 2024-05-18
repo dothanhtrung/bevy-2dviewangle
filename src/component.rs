@@ -23,7 +23,7 @@ pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 ///     #[textureview(angle = "back")]
 ///     pub idle_back: Handle<Image>,
 ///
-///     // If the angle "right" is not defined, it will be flipped base on the angle "left" image
+///     // If the angle "right" is not defined, it will be flipped (2d) or rotate (3d) base on the angle "left" image
 ///     #[textureview(angle = "left")]
 ///     pub idle_left: Handle<Image>,
 ///
