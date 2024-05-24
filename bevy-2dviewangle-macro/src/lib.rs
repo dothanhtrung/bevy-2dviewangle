@@ -118,6 +118,8 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
             }
 
             let expanded = quote! {
+                use bevy_2dviewangle::Angle;
+
                 #[derive(Default, Eq, PartialEq)]
                 #[repr(u64)]
                 pub enum Actor {
