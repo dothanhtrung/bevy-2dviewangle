@@ -35,8 +35,8 @@
 //!     mut action_event: EventWriter<ViewChanged>,
 //! ) {
 //!     for (mut act, e) in actors.iter_mut() {
-//!         act.action = Action::Idle;
-//!         act.angle = Angle::Right;
+//!         act.action = ActionMyAssets::Idle;
+//!         act.angle = AngleMyAssets::Right;
 //!         action_event.send(ViewChanged { entity: e });
 //!     }
 //! }

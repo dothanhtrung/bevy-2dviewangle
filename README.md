@@ -14,7 +14,8 @@ bevy_2dviewangle
 Bevy plugin to easier to manage and switch texture base on view angles.
 
 
-## Quickstart
+Quickstart
+----------
 
 ```rust
 // Struct to store sprite sheet
@@ -44,8 +45,8 @@ fn switch_sprite(
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
-        act.action = Action::Idle;
-        act.angle = Angle::Right;
+        act.action = ActionMyAssets::Idle;
+        act.angle = AngleMyAssets::Right;
         action_event.send(ViewChanged { entity: e });
     }
 }
@@ -77,14 +78,16 @@ pub struct MyAssets {
 ```
 
 
-## License
+License
+-------
 
 Please see [LICENSE](./LICENSE).
 
 
-## Compatible Bevy Versions
+Compatible Bevy Versions
+------------------------
 
 | bevy | bevy_2dviewangle         |
 |------|--------------------------|
-| 0.13 | 0.2-0.5, branch `master` |
+| 0.13 | 0.2-0.6, branch `master` |
 | 0.12 | 0.1                      |

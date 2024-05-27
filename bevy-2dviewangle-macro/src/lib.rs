@@ -3,7 +3,7 @@
 use proc_macro::TokenStream;
 use std::collections::HashMap;
 
-use quote::quote;
+use quote::{format_ident, quote};
 use syn::punctuated::Punctuated;
 use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
 
@@ -98,9 +98,6 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                     ty if quote!(#ty).to_string() == "Handle < TextureAtlasLayout >" => {
                         atlas_layout_value = quote! {Some(&self.#field_name)}
                     }
-                    ty if quote!(#ty).to_string() != "Handle<TextureAtlasLayout>" => {
-                        println!("====== {}", quote!(#ty).to_string());
-                    }
                     _ => {}
                 }
 
@@ -117,12 +114,14 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 fields_info.push(field_info);
             }
 
+			let actor_enum_name = format_ident!("Actor{}", struct_name);
+			let action_enum_name = format_ident!("Action{}", struct_name);
             let expanded = quote! {
                 use bevy_2dviewangle::Angle;
 
                 #[derive(Default, Eq, PartialEq)]
                 #[repr(u64)]
-                pub enum Actor {
+                pub enum #actor_enum_name {
                     #[default]
                     Any,
                     #( #actor_enum ),*
@@ -130,7 +129,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
 
                 #[derive(Default, Eq, PartialEq)]
                 #[repr(u16)]
-                pub enum Action {
+                pub enum #action_enum_name {
                     #[default]
                     Any,
                     #( #action_enum ),*

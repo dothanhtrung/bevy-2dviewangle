@@ -37,7 +37,7 @@ pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 /// ```rust
 /// #[derive(Default, Eq, PartialEq)]
 /// #[repr(u64)]
-/// pub enum Actor {
+/// pub enum ActorMyAssets {
 ///     #[default]
 ///     Any,
 ///     Frog,
@@ -45,7 +45,7 @@ pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 ///
 /// #[derive(Default, Eq, PartialEq)]
 /// #[repr(u16)]
-/// pub enum Action {
+/// pub enum ActionMyAssets {
 ///     #[default]
 ///     Any,
 ///     Idle,

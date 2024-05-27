@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, Angle, DynamicActor, View2DAnglePlugin};
+use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, DynamicActor, View2DAnglePlugin};
 
 use crate::common::input;
 
@@ -74,7 +74,7 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_ass
         },
         // Specify actor for entity
         DynamicActor {
-            actor: Actor::Frog as u64,
+            actor: ActorMyAssets::Frog as u64,
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

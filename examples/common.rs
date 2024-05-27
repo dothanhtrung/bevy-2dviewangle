@@ -2,11 +2,11 @@ use bevy::asset::Handle;
 use bevy::input::ButtonInput;
 use bevy::prelude::{Entity, EventWriter, Image, KeyCode, Query, Res, TextureAtlasLayout};
 
-use bevy_2dviewangle::{ActorsTexturesCollection, Angle, DynamicActor, ViewChanged};
+use bevy_2dviewangle::{ActorsTexturesCollection, DynamicActor, ViewChanged};
 
 // Struct to load spritesheet
 // The derive macro will provide these two enums too:
-// `enum Actor { Frog }` and `enum Action { Idle }`
+// `enum ActorMyAssets { Frog }` and `enum ActionMyAssets { Idle }`
 #[derive(ActorsTexturesCollection, Default)]
 pub struct MyAssets {
     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -36,16 +36,16 @@ pub fn input(
 
         // Update action id and direction of actor
         if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
-            action = Action::Idle as u16;
+            action = ActionMyAssets::Idle as u16;
             direction = Angle::Left;
         } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
-            action = Action::Idle as u16;
+            action = ActionMyAssets::Idle as u16;
             direction = Angle::Right;
         } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = Action::Idle as u16;
+            action = ActionMyAssets::Idle as u16;
             direction = Angle::Back;
         } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
-            action = Action::Idle as u16;
+            action = ActionMyAssets::Idle as u16;
             direction = Angle::Front;
         }
 
