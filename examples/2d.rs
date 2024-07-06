@@ -30,7 +30,7 @@ fn setup(
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     mut animation2d: ResMut<ActorsTextures>,
 ) {
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
     let my_assets = MyAssets {
         idle_front: asset_server.load("frog_idle_front.png"),
         idle_back: asset_server.load("frog_idle_back.png"),
@@ -43,13 +43,13 @@ fn setup(
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        SpriteSheetBundle {
+        SpriteBundle{
             texture: my_assets.idle_front.clone(),
-            atlas: TextureAtlas {
-                layout: my_assets.layout.clone(),
-                ..default()
-            },
             transform: Transform::from_scale(Vec3::splat(10.)),
+            ..default()
+        },
+        TextureAtlas {
+            layout: my_assets.layout.clone(),
             ..default()
         },
         // Specify actor for entity

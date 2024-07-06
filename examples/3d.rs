@@ -41,7 +41,7 @@ fn load_texture(
     mut animation2d: ResMut<ActorsTextures>,
     mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
     let my_assets = MyAssets {
         idle_front: asset_server.load("frog_idle_front.png"),
         idle_back: asset_server.load("frog_idle_back.png"),

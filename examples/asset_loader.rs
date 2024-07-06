@@ -29,7 +29,7 @@ pub struct MyAssets {
     #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
 
-    #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 1, rows = 3))]
     #[textureview(angle = "any")]
     pub front_layout: Handle<TextureAtlasLayout>,
 }
@@ -63,12 +63,12 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_ass
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        SpriteSheetBundle {
+        TextureAtlas {
+            layout: my_assets.front_layout.clone(),
+            ..default()
+        },
+        SpriteBundle {
             texture: my_assets.idle_front.clone(),
-            atlas: TextureAtlas {
-                layout: my_assets.front_layout.clone(),
-                ..default()
-            },
             transform: Transform::from_scale(Vec3::splat(10.)),
             ..default()
         },

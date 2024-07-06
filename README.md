@@ -89,5 +89,6 @@ Compatible Bevy Versions
 
 | bevy | bevy_2dviewangle         |
 |------|--------------------------|
-| 0.13 | 0.2-0.6, branch `master` |
+| 0.14 | 0.7, branch `master`     |
+| 0.13 | 0.2-0.6                  |
 | 0.12 | 0.1                      |
