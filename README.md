@@ -71,7 +71,7 @@ pub struct MyAssets {
     #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
 
-    #[asset(texture_atlas_layout(tile_size_x = 16., tile_size_y = 16., columns = 1, rows = 3))]
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 1, rows = 3))]
     #[textureview(angle = "any")]
     pub any_layout: Handle<TextureAtlasLayout>,
 }
