@@ -20,6 +20,6 @@ default = ["2d", "3d"]
 2d = []
 
 [dev-dependencies]
-bevy = "0.14"
+bevy = { version="0.14", features=["dynamic_linking"] }
 bevy_sprite3d = "3.0"
-bevy_asset_loader = { version = "0.21", features = ["2d", "3d", "standard_dynamic_assets"] }
+bevy_asset_loader = { version = "0.21", features = ["2d"] }
