@@ -1,28 +1,24 @@
-image: "rust:latest"
+image: "dothanhtrung/bevy-dev:latest"
 
-before_script:
-  - apt-get update -yqq
-  - apt-get install -yqq --no-install-recommends clang mold sccache clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-
-build:
+check:
   stage: build
   script:
     - rustc --version && cargo --version  # Print version info for debugging
-    - cargo build --example 2d
-    - cargo build --example 3d
-    - cargo build --example asset_loader
+    - cargo check --example 2d
+    - cargo check --example 3d
+    - cargo check --example asset_loader
   cache:
-    key: build-cache
+    key: check-cache
     paths:
-      - target/
+      - ../target/
 
 publish:
   stage: deploy
   script:
     - cargo publish --token $TOKEN
   cache:
-    key: build-cache
+    key: check-cache
     paths:
-      - target/
+      - ../target/
   only:
     - tags
