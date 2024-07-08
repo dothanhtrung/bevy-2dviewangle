@@ -6,10 +6,9 @@ bevy_2dviewangle
 [![dependency status](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle)
 [![pipeline status](https://gitlab.com/kimtinh/bevy-2dviewangle/badges/master/pipeline.svg)](https://gitlab.com/kimtinh/bevy-2dviewangle/-/commits/master)
 
-![](https://i.imgur.com/7fRkkg3.mp4)
+![](examples/2d.mp4)
 
-
-![](https://i.imgur.com/i3JnW9K.mp4)
+![](examples/3d.mp4)
 
 Bevy plugin to easier to manage and switch texture base on view angles.
 
