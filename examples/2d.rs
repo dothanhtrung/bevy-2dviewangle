@@ -54,7 +54,7 @@ fn setup(
         },
         // Specify actor for entity
         DynamicActor {
-            actor: ActorMyAssets::Frog as u64,
+            actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

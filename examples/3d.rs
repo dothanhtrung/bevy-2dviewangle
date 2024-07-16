@@ -60,9 +60,9 @@ fn setup(
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let front_handle = animation2d
-        .get(&(ActorMyAssets::Frog as u64))
+        .get(&(ActorMyAssets::Frog.into()))
         .unwrap()
-        .get(&(ActionMyAssets::Idle as u16))
+        .get(&(ActionMyAssets::Idle.into()))
         .unwrap()
         .get(&Angle::Front)
         .unwrap();
@@ -112,7 +112,7 @@ fn setup(
         .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
         // Specify actor for entity
         DynamicActor {
-            actor: ActorMyAssets::Frog as u64,
+            actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

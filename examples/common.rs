@@ -36,16 +36,16 @@ pub fn input(
 
         // Update action id and direction of actor
         if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
-            action = ActionMyAssets::Idle as u16;
+            action = ActionMyAssets::Idle.into();
             direction = Angle::Left;
         } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
-            action = ActionMyAssets::Idle as u16;
+            action = ActionMyAssets::Idle.into();
             direction = Angle::Right;
         } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
-            action = ActionMyAssets::Idle as u16;
+            action = ActionMyAssets::Idle.into();
             direction = Angle::Back;
         } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
-            action = ActionMyAssets::Idle as u16;
+            action = ActionMyAssets::Idle.into();
             direction = Angle::Front;
         }
 

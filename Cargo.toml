@@ -1,13 +1,13 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://gitlab.com/kimtinh/bevy-2dviewangle"
 keywords = ["bevy"]
 description = "Bevy plugin for easier to switch texture base on view angles"
-exclude = ["assets", "examples", ".cargo", "bevy-2dviewangle-macro"]
+exclude = ["assets", "examples", ".cargo", "tests", "bevy-2dviewangle-macro"]
 categories = ["game-development"]
 
 [dependencies]
@@ -20,6 +20,15 @@ default = ["2d", "3d"]
 2d = []
 
 [dev-dependencies]
-bevy = { version="0.14", features=["dynamic_linking"] }
+bevy = { version = "0.14", features = [
+    "bevy_asset",
+    "bevy_pbr",
+    "bevy_sprite",
+    "tonemapping_luts",
+    "png",
+    "dynamic_linking",
+    "bevy_winit",
+    "wayland",
+], default-features = false }
 bevy_sprite3d = "3.0"
 bevy_asset_loader = { version = "0.21", features = ["2d"] }

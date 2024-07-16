@@ -127,12 +127,24 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                     #( #actor_enum ),*
                 }
 
+                impl From<#actor_enum_name> for u64 {
+                    fn from(actor: #actor_enum_name) -> Self {
+                        actor as u64
+                    }
+                }
+
                 #[derive(Default, Eq, PartialEq)]
                 #[repr(u16)]
                 pub enum #action_enum_name {
                     #[default]
                     Any,
                     #( #action_enum ),*
+                }
+
+                impl From<#action_enum_name> for u16 {
+                    fn from(action: #action_enum_name) -> Self {
+                        action as u16
+                    }
                 }
 
                 #[automatically_derived]
