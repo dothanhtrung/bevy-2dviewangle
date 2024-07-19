@@ -43,7 +43,7 @@ fn setup(
 
     commands.spawn(Camera2dBundle::default());
     commands.spawn((
-        SpriteBundle{
+        SpriteBundle {
             texture: my_assets.idle_front.clone(),
             transform: Transform::from_scale(Vec3::splat(10.)),
             ..default()

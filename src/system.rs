@@ -1,9 +1,9 @@
 // Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::{Assets, Handle};
-use bevy::prelude::{EventReader, Image, Query, Res, Sprite, StandardMaterial, Time, Transform};
 #[cfg(feature = "3d")]
 use bevy::prelude::ResMut;
+use bevy::prelude::{EventReader, Image, Query, Res, Sprite, StandardMaterial, Time, Transform};
 use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
 
 use crate::component::*;

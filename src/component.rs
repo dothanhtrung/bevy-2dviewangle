@@ -213,24 +213,24 @@ impl ActorsTextures {
 
             if let Some(image_handle) = image {
                 sprite.image = Some(image_handle.clone());
-            } else if any.is_some() {
-                sprite.image = any.as_ref().unwrap().image.clone();
+            } else if let Some(any) = any.as_ref() {
+                sprite.image.clone_from(&any.image);
             }
 
             if let Some(atlas_layout_handle) = atlas_layout {
                 sprite.layout = Some(atlas_layout_handle.clone());
-            } else if any.is_some() {
-                sprite.layout = any.unwrap().layout.clone();
+            } else if let Some(any) = any.as_ref() {
+                sprite.layout.clone_from(&any.layout);
             }
 
             if field_angle == Angle::Any {
                 let any = sprite.clone();
                 for s in action.values_mut() {
                     if s.image.is_none() {
-                        s.image = any.image.clone();
+                        s.image.clone_from(&any.image);
                     }
                     if s.layout.is_none() {
-                        s.layout = any.layout.clone();
+                        s.layout.clone_from(&any.layout);
                     }
                 }
             }

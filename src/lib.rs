@@ -67,7 +67,10 @@
 //! }
 //! ```
 
-use bevy::app::{App, Plugin, Update};
+use bevy::{
+    app::{App, Plugin, Update},
+    prelude::{on_event, IntoSystemConfigs},
+};
 
 pub use component::*;
 use system::*;
@@ -80,7 +83,13 @@ pub struct View2DAnglePlugin;
 impl Plugin for View2DAnglePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ViewChanged>()
-            .add_systems(Update, (view_changed_event, dynamic_actor_animate))
+            .add_systems(
+                Update,
+                (
+                    view_changed_event.run_if(on_event::<ViewChanged>()),
+                    dynamic_actor_animate,
+                ),
+            )
             .insert_resource(ActorsTextures::default());
     }
 }
