@@ -33,7 +33,7 @@ fn capitalize_first_letter(s: &str) -> String {
 }
 
 const TEXTUREVIEW_ATTRIBUTE: &str = "textureview";
-#[proc_macro_derive(ActorsTexturesCollection, attributes(textureview))]
+#[proc_macro_derive(View2dCollection, attributes(textureview))]
 pub fn actors_textures_derive(input: TokenStream) -> TokenStream {
     let ast: syn::DeriveInput = syn::parse(input).unwrap();
     impl_actors_textures(ast).unwrap_or_default().into()
@@ -148,7 +148,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 }
 
                 #[automatically_derived]
-                impl ActorsTexturesCollection for #struct_name {
+                impl View2dCollection for #struct_name {
                     fn get_all(&self) -> Vec<(
                         Option<u64>,
                         Option<u16>,

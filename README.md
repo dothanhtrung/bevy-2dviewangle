@@ -18,7 +18,7 @@ Quickstart
 
 ```rust
 // Struct to store sprite sheet
-#[derive(ActorsTexturesCollection, Default)]
+#[derive(View2dCollection, Default)]
 struct MyAssets {
     #[textureview(actor = "player", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
@@ -40,7 +40,7 @@ struct MyAssets {
 ```rust
 // Change the sprite sheet by sending event
 fn switch_sprite(
-    mut actors: Query<(&mut DynamicActor, Entity)>,
+    mut actors: Query<(&mut View2dActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
@@ -56,7 +56,7 @@ Please see in [examples](./examples) for more detail.
 This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
 
 ```rust
-#[derive(AssetCollection, ActorsTexturesCollection, Resource)]
+#[derive(AssetCollection, View2dCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -86,8 +86,8 @@ Please see [LICENSE](./LICENSE).
 Compatible Bevy Versions
 ------------------------
 
-| bevy | bevy_2dviewangle         |
-|------|--------------------------|
-| 0.14 | 0.7, branch `master`     |
-| 0.13 | 0.2-0.6                  |
-| 0.12 | 0.1                      |
+| bevy | bevy_2dviewangle             |
+|------|------------------------------|
+| 0.14 | 0.7-0.8, branch `master`     |
+| 0.13 | 0.2-0.6                      |
+| 0.12 | 0.1                          |

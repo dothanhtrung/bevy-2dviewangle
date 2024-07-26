@@ -5,16 +5,16 @@ use std::collections::HashMap;
 use bevy::asset::Handle;
 use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
 use bevy::sprite::TextureAtlasLayout;
-pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
+pub use bevy_2dviewangle_macro::View2dCollection;
 
 /// The trait to use in derive macro. You won't need to implement this trait.
 ///
 /// Example:
 /// ```rust
 /// use bevy::prelude::*;
-/// use bevy_2dviewangle::ActorsTexturesCollection;
+/// use bevy_2dviewangle::View2dCollection;
 ///
-/// #[derive(ActorsTexturesCollection)]
+/// #[derive(View2dCollection)]
 /// pub struct MyAssets {
 ///     #[textureview(actor = "frog", action = "idle", angle = "front")]
 ///     pub idle_front: Handle<Image>,
@@ -51,7 +51,7 @@ pub use bevy_2dviewangle_macro::ActorsTexturesCollection;
 ///     Idle,
 /// }
 /// ```
-pub trait ActorsTexturesCollection {
+pub trait View2dCollection {
     fn get_all(
         &self,
     ) -> Vec<(
@@ -80,17 +80,17 @@ pub enum Angle {
 
 /// Sprite sheet for one angle, store image and atlas layout
 #[derive(Default, Clone)]
-pub struct ViewSprite {
+pub struct SpriteSheet {
     pub layout: Option<Handle<TextureAtlasLayout>>,
     pub image: Option<Handle<Image>>,
 }
 
-/// Map of Angle and its ViewSprite
+/// Map of Angle and its SpriteSheet  
 #[derive(Default, Deref, DerefMut)]
-pub struct ViewTextures(HashMap<Angle, ViewSprite>);
+pub struct AngleSpriteSheets(HashMap<Angle, SpriteSheet>);
 
 #[derive(Component, Default)]
-pub struct DynamicActor {
+pub struct View2dActor {
     pub angle: Angle,
     pub action: u16,
     pub actor: u64,
@@ -100,17 +100,17 @@ pub struct DynamicActor {
 
 /// The resource that stores every spritesheets. Organized by actor id (u64) and action id (u16)
 #[derive(Resource, Deref, DerefMut, Default)]
-pub struct ActorsTextures(HashMap<u64, HashMap<u16, ViewTextures>>);
+pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 
 /// Event to send when want to change the spritesheet.
 ///
 /// Example:
 /// ```rust
 /// use bevy::prelude::*;
-/// use bevy_2dviewangle::{Angle, DynamicActor, ViewChanged};
+/// use bevy_2dviewangle::{Angle, View2dActor, ViewChanged};
 ///
 /// pub fn input(
-///     mut actors: Query<(&mut DynamicActor, Entity)>,
+///     mut actors: Query<(&mut View2dActor, Entity)>,
 ///     mut action_event: EventWriter<ViewChanged>,
 /// ) {
 ///     for (mut act, e) in actors.iter_mut() {
@@ -127,9 +127,9 @@ pub struct ViewChanged {
     pub entity: Entity,
 }
 
-impl ViewTextures {
-    /// Store spritesheets from list of Angle and ViewSprite in case you don't want to use derive `ActorsTexturesCollection`.
-    pub fn from(items: Vec<(Angle, ViewSprite)>) -> Self {
+impl AngleSpriteSheets {
+    /// Store spritesheets from list of Angle and SpriteSheet in case you don't want to use derive `View2dCollection`.
+    pub fn from(items: Vec<(Angle, SpriteSheet)>) -> Self {
         let mut map = HashMap::new();
         for (key, value) in items {
             map.insert(key, value);
@@ -138,15 +138,15 @@ impl ViewTextures {
     }
 }
 
-impl ActorsTextures {
-    /// Store spiresheets from an instance of struct that uses derive `ActorsTexturesCollection`.
+impl ActorSpriteSheets {
+    /// Store spiresheets from an instance of struct that uses derive `View2dCollection`.
     ///
     /// Example:
     /// ```rust
     /// use bevy::prelude::*;
-    /// use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection};
+    /// use bevy_2dviewangle::{ActorSpriteSheets, View2dCollection};
     ///
-    /// #[derive(ActorsTexturesCollection)]
+    /// #[derive(View2dCollection)]
     /// pub struct MyAssets {
     ///     #[textureview(actor = "frog", action = "idle", angle = "front")]
     ///     pub idle_front: Handle<Image>,
@@ -165,7 +165,7 @@ impl ActorsTextures {
     ///     mut commands: Commands,
     ///     asset_server: Res<AssetServer>,
     ///     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
-    ///     mut animation2d: ResMut<ActorsTextures>,
+    ///     mut animation2d: ResMut<ActorSpriteSheets>,
     /// ) {
     ///     let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
     ///     let my_assets = MyAssets {
@@ -179,7 +179,7 @@ impl ActorsTextures {
     ///     animation2d.load_asset_loader(&my_assets);
     /// }
     /// ```
-    pub fn load_asset_loader<T: ActorsTexturesCollection>(&mut self, loader: &T) {
+    pub fn load_asset_loader<T: View2dCollection>(&mut self, loader: &T) {
         let mut actor_id = 0;
         let mut action_id = 0;
         for (actor, action, angle, image, atlas_layout) in loader.get_all() {
@@ -198,7 +198,7 @@ impl ActorsTextures {
             if let Some(_action) = actor.get_mut(&action_id) {
                 action = _action;
             } else {
-                actor.insert(action_id, ViewTextures::default());
+                actor.insert(action_id, AngleSpriteSheets::default());
                 action = actor.get_mut(&action_id).unwrap();
             }
 
@@ -207,7 +207,7 @@ impl ActorsTextures {
             if let Some(_sprite) = action.get_mut(&field_angle) {
                 sprite = _sprite;
             } else {
-                action.insert(field_angle, ViewSprite::default());
+                action.insert(field_angle, SpriteSheet::default());
                 sprite = action.get_mut(&field_angle).unwrap();
             }
 

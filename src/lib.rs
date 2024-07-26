@@ -8,10 +8,10 @@
 //! ```rust
 //! // Struct to store sprite sheet
 //! use bevy::prelude::*;
-//! use bevy_2dviewangle_macro::ActorsTexturesCollection;
-//! use bevy_2dviewangle::{Angle, DynamicActor, ViewChanged};
+//! use bevy_2dviewangle_macro::View2dCollection;
+//! use bevy_2dviewangle::{Angle, View2dActor, ViewChanged};
 //!
-//! #[derive(ActorsTexturesCollection, Default)]
+//! #[derive(View2dCollection, Default)]
 //! struct MyAssets {
 //!     #[textureview(actor = "player", action = "idle", angle = "front")]
 //!     pub idle_front: Handle<Image>,
@@ -31,7 +31,7 @@
 //!
 //! // Change the sprite sheet by sending event
 //! fn switch_sprite(
-//!     mut actors: Query<(&mut DynamicActor, Entity)>,
+//!     mut actors: Query<(&mut View2dActor, Entity)>,
 //!     mut action_event: EventWriter<ViewChanged>,
 //! ) {
 //!     for (mut act, e) in actors.iter_mut() {
@@ -47,7 +47,7 @@
 //! This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
 //!
 //! ```rust
-//! #[derive(AssetCollection, ActorsTexturesCollection, Resource)]
+//! #[derive(AssetCollection, View2dCollection, Resource)]
 //! pub struct MyAssets {
 //!     #[asset(path = "frog_idle_front.png")]
 //!     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -72,24 +72,71 @@ use bevy::{
     prelude::{on_event, IntoSystemConfigs},
 };
 
+#[cfg(feature = "state")]
+use bevy::prelude::{in_state, States};
+
 pub use component::*;
 use system::*;
 
 mod component;
 mod system;
 
-pub struct View2DAnglePlugin;
+macro_rules! plugin_systems {
+    () => {
+        (
+            view_changed_event.run_if(on_event::<ViewChanged>()),
+            dynamic_actor_animate,
+        )
+    };
+}
 
-impl Plugin for View2DAnglePlugin {
+/// The main plugin
+#[cfg(feature = "state")]
+#[derive(Default)]
+pub struct View2DAnglePlugin<T>
+where
+    T: States,
+{
+    /// List of game state that this plugin will run in
+    pub states: Option<Vec<T>>,
+}
+
+#[cfg(feature = "state")]
+impl<T> Plugin for View2DAnglePlugin<T>
+where
+    T: States,
+{
     fn build(&self, app: &mut App) {
         app.add_event::<ViewChanged>()
-            .add_systems(
-                Update,
-                (
-                    view_changed_event.run_if(on_event::<ViewChanged>()),
-                    dynamic_actor_animate,
-                ),
-            )
-            .insert_resource(ActorsTextures::default());
+            .insert_resource(ActorSpriteSheets::default());
+        if let Some(states) = &self.states {
+            for state in states {
+                app.add_systems(Update, plugin_systems!().run_if(in_state(state.clone())));
+            }
+        } else {
+            app.add_systems(Update, plugin_systems!());
+        }
+    }
+}
+
+#[cfg(feature = "state")]
+impl<T> View2DAnglePlugin<T>
+where
+    T: States,
+{
+    pub fn new(states: Vec<T>) -> Self {
+        Self { states: Some(states) }
+    }
+}
+
+/// Use this if you don't care to state and want this plugin's systems run all the time.
+#[derive(Default)]
+pub struct View2DAnglePluginNoState;
+
+impl Plugin for View2DAnglePluginNoState {
+    fn build(&self, app: &mut App) {
+        app.add_event::<ViewChanged>()
+            .insert_resource(ActorSpriteSheets::default())
+            .add_systems(Update, plugin_systems!());
     }
 }

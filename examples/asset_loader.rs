@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use bevy_2dviewangle::{ActorsTextures, ActorsTexturesCollection, DynamicActor, View2DAnglePlugin};
+use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePlugin, View2dActor, View2dCollection};
 
 use crate::common::input;
 
@@ -12,10 +12,10 @@ mod common;
 enum MyStates {
     #[default]
     AssetLoading,
-    Next,
+    InGame,
 }
 
-#[derive(AssetCollection, ActorsTexturesCollection, Resource)]
+#[derive(AssetCollection, View2dCollection, Resource)]
 pub struct MyAssets {
     #[asset(path = "frog_idle_front.png")]
     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -47,17 +47,17 @@ fn main() {
         .init_state::<MyStates>()
         .add_loading_state(
             LoadingState::new(MyStates::AssetLoading)
-                .continue_to_state(MyStates::Next)
+                .continue_to_state(MyStates::InGame)
                 .load_collection::<MyAssets>(),
         )
         // Add the plugin
-        .add_plugins(View2DAnglePlugin)
-        .add_systems(OnEnter(MyStates::Next), setup)
-        .add_systems(Update, input.run_if(in_state(MyStates::Next)))
+        .add_plugins(View2DAnglePlugin::new(vec![MyStates::InGame]))
+        .add_systems(OnEnter(MyStates::InGame), setup)
+        .add_systems(Update, input.run_if(in_state(MyStates::InGame)))
         .run();
 }
 
-fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_assets: Res<MyAssets>) {
+fn setup(mut commands: Commands, mut animation2d: ResMut<ActorSpriteSheets>, my_assets: Res<MyAssets>) {
     // Load into collection
     animation2d.load_asset_loader(my_assets.as_ref());
 
@@ -73,7 +73,7 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorsTextures>, my_ass
             ..default()
         },
         // Specify actor for entity
-        DynamicActor {
+        View2dActor {
             actor: ActorMyAssets::Frog as u64,
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()

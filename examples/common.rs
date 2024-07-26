@@ -2,12 +2,12 @@ use bevy::asset::Handle;
 use bevy::input::ButtonInput;
 use bevy::prelude::{Entity, EventWriter, Image, KeyCode, Query, Res, TextureAtlasLayout};
 
-use bevy_2dviewangle::{ActorsTexturesCollection, DynamicActor, ViewChanged};
+use bevy_2dviewangle::{View2dActor, View2dCollection, ViewChanged};
 
 // Struct to load spritesheet
 // The derive macro will provide these two enums too:
 // `enum ActorMyAssets { Frog }` and `enum ActionMyAssets { Idle }`
-#[derive(ActorsTexturesCollection, Default)]
+#[derive(View2dCollection, Default)]
 pub struct MyAssets {
     #[textureview(actor = "frog", action = "idle", angle = "front")]
     pub idle_front: Handle<Image>,
@@ -27,7 +27,7 @@ pub struct MyAssets {
 
 pub fn input(
     kb_input: Res<ButtonInput<KeyCode>>,
-    mut actors: Query<(&mut DynamicActor, Entity)>,
+    mut actors: Query<(&mut View2dActor, Entity)>,
     mut action_event: EventWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {

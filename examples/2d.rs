@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 
-use bevy_2dviewangle::{ActorsTextures, DynamicActor, View2DAnglePlugin};
+use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePluginNoState, View2dActor};
 
 use crate::common::{input, ActorMyAssets, MyAssets};
 
@@ -18,7 +18,7 @@ fn main() {
             ..default()
         }))
         // Add the plugin
-        .add_plugins(View2DAnglePlugin)
+        .add_plugins(View2DAnglePluginNoState)
         .add_systems(Startup, setup)
         .add_systems(Update, input)
         .run();
@@ -28,7 +28,7 @@ fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
-    mut animation2d: ResMut<ActorsTextures>,
+    mut animation2d: ResMut<ActorSpriteSheets>,
 ) {
     let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
     let my_assets = MyAssets {
@@ -53,7 +53,7 @@ fn setup(
             ..default()
         },
         // Specify actor for entity
-        DynamicActor {
+        View2dActor {
             actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()

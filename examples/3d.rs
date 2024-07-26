@@ -3,7 +3,7 @@ use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
 use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
 
-use bevy_2dviewangle::{ActorsTextures, Angle, DynamicActor, View2DAnglePlugin};
+use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginNoState, View2dActor};
 
 use crate::common::{input, ActionMyAssets, ActorMyAssets, MyAssets};
 
@@ -27,7 +27,7 @@ fn main() {
             ..default()
         }))
         // Add the plugin
-        .add_plugins(View2DAnglePlugin)
+        .add_plugins(View2DAnglePluginNoState)
         .add_plugins(Sprite3dPlugin)
         .init_state::<GameState>()
         .add_systems(Startup, load_texture)
@@ -38,7 +38,7 @@ fn main() {
 
 fn load_texture(
     asset_server: Res<AssetServer>,
-    mut animation2d: ResMut<ActorsTextures>,
+    mut animation2d: ResMut<ActorSpriteSheets>,
     mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
@@ -55,7 +55,7 @@ fn load_texture(
 
 fn setup(
     mut commands: Commands,
-    animation2d: Res<ActorsTextures>,
+    animation2d: Res<ActorSpriteSheets>,
     mut sprite3d_params: Sprite3dParams,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
@@ -111,7 +111,7 @@ fn setup(
         }
         .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
         // Specify actor for entity
-        DynamicActor {
+        View2dActor {
             actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()

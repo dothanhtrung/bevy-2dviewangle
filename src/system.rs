@@ -14,7 +14,7 @@ use crate::component::*;
 pub(crate) fn view_changed_event(
     mut events: EventReader<ViewChanged>,
     mut sprites: Query<(
-        &mut DynamicActor,
+        &mut View2dActor,
         &mut Transform,
         Option<&mut Sprite>,
         Option<&Handle<StandardMaterial>>,
@@ -22,7 +22,7 @@ pub(crate) fn view_changed_event(
         Option<&mut Handle<TextureAtlasLayout>>,
     )>,
     #[cfg(feature = "3d")] mut mats: ResMut<Assets<StandardMaterial>>,
-    animation2d: Res<ActorsTextures>,
+    animation2d: Res<ActorSpriteSheets>,
 ) {
     for event in events.read() {
         if let Ok((mut view, mut transform, mut sprite, _mat, _handle, atlas_layout)) = sprites.get_mut(event.entity) {
@@ -79,7 +79,7 @@ pub(crate) fn view_changed_event(
     }
 }
 
-fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> Option<&ViewSprite> {
+fn get_opposite_view(texture: &AngleSpriteSheets, direction: Angle) -> Option<&SpriteSheet> {
     match direction {
         Angle::Left => texture.get(&Angle::Right),
         Angle::Right => texture.get(&Angle::Left),
@@ -94,7 +94,7 @@ fn get_opposite_view(texture: &ViewTextures, direction: Angle) -> Option<&ViewSp
 pub(crate) fn dynamic_actor_animate(
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
-    mut query: Query<(&mut DynamicActor, Option<&mut TextureAtlas>)>,
+    mut query: Query<(&mut View2dActor, Option<&mut TextureAtlas>)>,
 ) {
     for (mut actor, texture_atlas) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
