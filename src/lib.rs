@@ -108,6 +108,7 @@ where
 {
     fn build(&self, app: &mut App) {
         app.add_event::<ViewChanged>()
+            .add_event::<LastFrame>()
             .insert_resource(ActorSpriteSheets::default());
         if let Some(states) = &self.states {
             for state in states {
@@ -136,6 +137,7 @@ pub struct View2DAnglePluginNoState;
 impl Plugin for View2DAnglePluginNoState {
     fn build(&self, app: &mut App) {
         app.add_event::<ViewChanged>()
+            .add_event::<LastFrame>()
             .insert_resource(ActorSpriteSheets::default())
             .add_systems(Update, plugin_systems!());
     }

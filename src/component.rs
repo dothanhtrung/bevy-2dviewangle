@@ -127,6 +127,12 @@ pub struct ViewChanged {
     pub entity: Entity,
 }
 
+/// Sent when animation went to the last frame
+#[derive(Event)]
+pub struct LastFrame {
+    pub entity: Entity,
+}
+
 impl AngleSpriteSheets {
     /// Store spritesheets from list of Angle and SpriteSheet in case you don't want to use derive `View2dCollection`.
     pub fn from(items: Vec<(Angle, SpriteSheet)>) -> Self {

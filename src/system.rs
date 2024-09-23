@@ -3,7 +3,7 @@
 use bevy::asset::{Assets, Handle};
 #[cfg(feature = "3d")]
 use bevy::prelude::ResMut;
-use bevy::prelude::{EventReader, Image, Query, Res, Sprite, StandardMaterial, Time, Transform};
+use bevy::prelude::{Entity, EventReader, EventWriter, Image, Query, Res, Sprite, StandardMaterial, Time, Transform};
 use bevy::sprite::{TextureAtlas, TextureAtlasLayout};
 
 use crate::component::*;
@@ -94,14 +94,19 @@ fn get_opposite_view(texture: &AngleSpriteSheets, direction: Angle) -> Option<&S
 pub(crate) fn dynamic_actor_animate(
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
-    mut query: Query<(&mut View2dActor, Option<&mut TextureAtlas>)>,
+    mut query: Query<(&mut View2dActor, Option<&mut TextureAtlas>, Entity)>,
+    mut event: EventWriter<LastFrame>,
 ) {
-    for (mut actor, texture_atlas) in &mut query {
+    for (mut actor, texture_atlas, entity) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
             animation_timer.tick(time.delta());
             if animation_timer.just_finished() {
                 if let Some(mut atlas) = texture_atlas {
                     if let Some(layout) = atlases.get(&atlas.layout) {
+                        if atlas.index == layout.textures.len() - 1 {
+                            event.send(LastFrame { entity });
+                        }
+
                         atlas.index = (atlas.index + 1) % layout.textures.len();
                     }
                 }
