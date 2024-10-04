@@ -103,8 +103,14 @@ pub(crate) fn dynamic_actor_animate(
             if animation_timer.just_finished() {
                 if let Some(mut atlas) = texture_atlas {
                     if let Some(layout) = atlases.get(&atlas.layout) {
-                        if atlas.index == layout.textures.len() - 1 {
-                            event.send(LastFrame { entity });
+                        for notify in &actor.notify {
+                            match *notify {
+                                Notification::LastFrame => {
+                                    if atlas.index == layout.textures.len() - 1 {
+                                        event.send(LastFrame { entity });
+                                    }
+                                }
+                            }
                         }
 
                         atlas.index = (atlas.index + 1) % layout.textures.len();

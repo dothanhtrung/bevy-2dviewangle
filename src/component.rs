@@ -89,6 +89,10 @@ pub struct SpriteSheet {
 #[derive(Default, Deref, DerefMut)]
 pub struct AngleSpriteSheets(HashMap<Angle, SpriteSheet>);
 
+pub enum Notification {
+    LastFrame,
+}
+
 #[derive(Component, Default)]
 pub struct View2dActor {
     pub angle: Angle,
@@ -96,6 +100,7 @@ pub struct View2dActor {
     pub actor: u64,
     pub flipped: bool,
     pub animation_timer: Option<Timer>,
+    pub notify: Vec<Notification>,
 }
 
 /// The resource that stores every spritesheets. Organized by actor id (u64) and action id (u16)
