@@ -117,7 +117,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
 			let actor_enum_name = format_ident!("Actor{}", struct_name);
 			let action_enum_name = format_ident!("Action{}", struct_name);
             let expanded = quote! {
-                use bevy_2dviewangle::Angle;
+                use bevy_2dviewangle::*;
 
                 #[derive(Default, Eq, PartialEq)]
                 #[repr(u64)]
@@ -164,5 +164,5 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
         }
     }
 
-    return Err(vec![]);
+    Err(vec![])
 }
