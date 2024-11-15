@@ -114,8 +114,8 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 fields_info.push(field_info);
             }
 
-			let actor_enum_name = format_ident!("Actor{}", struct_name);
-			let action_enum_name = format_ident!("Action{}", struct_name);
+            let actor_enum_name = format_ident!("Actor{}", struct_name);
+            let action_enum_name = format_ident!("Action{}", struct_name);
             let expanded = quote! {
                 use bevy_2dviewangle::*;
 

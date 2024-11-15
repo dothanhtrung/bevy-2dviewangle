@@ -41,17 +41,14 @@ fn setup(
     // Load into collection
     animation2d.load_asset_loader(&my_assets);
 
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d::default());
     commands.spawn((
-        SpriteBundle {
-            texture: my_assets.idle_front.clone(),
-            transform: Transform::from_scale(Vec3::splat(10.)),
+        Sprite {
+            image: my_assets.idle_front.clone(),
+            texture_atlas: Some(TextureAtlas::from(my_assets.layout.clone())),
             ..default()
         },
-        TextureAtlas {
-            layout: my_assets.layout.clone(),
-            ..default()
-        },
+        Transform::from_scale(Vec3::splat(10.)),
         // Specify actor for entity
         View2dActor {
             actor: ActorMyAssets::Frog.into(),

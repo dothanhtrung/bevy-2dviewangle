@@ -1,6 +1,6 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.8.1"
+version = "0.9.0"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -11,7 +11,7 @@ exclude = ["assets", "examples", ".cargo", "tests", "bevy-2dviewangle-macro"]
 categories = ["game-development"]
 
 [dependencies]
-bevy = { version = "0.14", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+bevy = { version = "0.15.0-rc.3", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
 bevy_2dviewangle_macro = { version = "0.5", path = "./bevy-2dviewangle-macro" }
 
 [features]
@@ -21,7 +21,7 @@ default = ["2d", "3d", "state"]
 state = ["bevy/bevy_state"]
 
 [dev-dependencies]
-bevy = { version = "0.14", features = [
+bevy = { version = "0.15.0-rc.3", features = [
     "bevy_asset",
     "bevy_pbr",
     "bevy_sprite",

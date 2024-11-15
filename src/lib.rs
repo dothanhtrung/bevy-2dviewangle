@@ -84,7 +84,7 @@ mod system;
 macro_rules! plugin_systems {
     () => {
         (
-            view_changed_event.run_if(on_event::<ViewChanged>()),
+            view_changed_event.run_if(on_event::<ViewChanged>),
             dynamic_actor_animate,
         )
     };

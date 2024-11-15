@@ -30,7 +30,7 @@ struct MyAssets {
     // If the angle "right" is not defined, it will be flipped base on the "left" image
     #[textureview(angle = "left")]
     pub idle_left: Handle<Image>,
-    
+
     // If angle is any, other angle which has not been defined will use this value
     #[textureview(angle = "any")]
     pub idle_any_layout: Handle<TextureAtlasLayout>,
@@ -76,7 +76,6 @@ pub struct MyAssets {
 }
 ```
 
-
 License
 -------
 
@@ -86,8 +85,9 @@ Please see [LICENSE](./LICENSE).
 Compatible Bevy Versions
 ------------------------
 
-| bevy | bevy_2dviewangle             |
-|------|------------------------------|
-| 0.14 | 0.7-0.8, branch `master`     |
-| 0.13 | 0.2-0.6                      |
-| 0.12 | 0.1                          |
+| bevy | bevy_2dviewangle     |
+|------|----------------------|
+| 0.15 | 0.9, branch `master` |
+| 0.14 | 0.7-0.8              |
+| 0.13 | 0.2-0.6              |
+| 0.12 | 0.1                  |
