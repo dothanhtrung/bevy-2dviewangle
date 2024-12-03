@@ -61,20 +61,17 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorSpriteSheets>, my_
     // Load into collection
     animation2d.load_asset_loader(my_assets.as_ref());
 
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d::default());
     commands.spawn((
-        TextureAtlas {
-            layout: my_assets.front_layout.clone(),
+        Sprite {
+            image: my_assets.idle_front.clone(),
+            texture_atlas: Some(TextureAtlas::from(my_assets.front_layout.clone())),
             ..default()
         },
-        SpriteBundle {
-            texture: my_assets.idle_front.clone(),
-            transform: Transform::from_scale(Vec3::splat(10.)),
-            ..default()
-        },
+        Transform::from_scale(Vec3::splat(10.)),
         // Specify actor for entity
         View2dActor {
-            actor: ActorMyAssets::Frog as u64,
+            actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },

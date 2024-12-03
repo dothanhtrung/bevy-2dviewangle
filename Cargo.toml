@@ -11,7 +11,7 @@ exclude = ["assets", "examples", ".cargo", "tests", "bevy-2dviewangle-macro"]
 categories = ["game-development"]
 
 [dependencies]
-bevy = { version = "0.15.0-rc.3", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+bevy = { version = "0.15", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
 bevy_2dviewangle_macro = { version = "0.5", path = "./bevy-2dviewangle-macro" }
 
 [features]
@@ -21,15 +21,6 @@ default = ["2d", "3d", "state"]
 state = ["bevy/bevy_state"]
 
 [dev-dependencies]
-bevy = { version = "0.15.0-rc.3", features = [
-    "bevy_asset",
-    "bevy_pbr",
-    "bevy_sprite",
-    "tonemapping_luts",
-    "png",
-    "dynamic_linking",
-    "bevy_winit",
-    "wayland",
-], default-features = false }
+bevy = { version = "0.15" }
 bevy_sprite3d = "3.0"
-bevy_asset_loader = { version = "0.21", features = ["2d"] }
+bevy_asset_loader = { version = "0.22", features = ["2d"] }
