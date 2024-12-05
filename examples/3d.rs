@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
-use bevy_sprite3d::{Sprite3d, Sprite3dParams, Sprite3dPlugin};
+use bevy_sprite3d::{Sprite3dBuilder, Sprite3dParams, Sprite3dPlugin};
 
 use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginNoState, View2dActor};
 
@@ -70,29 +70,28 @@ fn setup(
     next_state.set(GameState::Ready);
 
     // light
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
+    commands.spawn((
+        PointLight {
             intensity: 50000.0,
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform::from_xyz(4., 10., 4.),
-        ..default()
-    });
+        Transform::from_xyz(4., 10., 4.),
+    ));
+
     // camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(0., 2.5, 3.).looking_at(Vec3::Y, Vec3::Y),
-        exposure: Exposure::INDOOR,
-        ..default()
-    });
+    commands.spawn((
+        Camera3d::default(),
+        Exposure::INDOOR,
+        Transform::from_xyz(0., 2.5, 3.).looking_at(Vec3::Y, Vec3::Y),
+    ));
 
     // plane
-    commands.spawn(PbrBundle {
-        mesh: sprite3d_params.meshes.add(Circle::new(4.0)),
-        material: sprite3d_params.materials.add(Color::WHITE),
-        transform: Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
-        ..default()
-    });
+    commands.spawn((
+        Mesh3d(sprite3d_params.meshes.add(Circle::new(4.0))),
+        MeshMaterial3d(sprite3d_params.materials.add(Color::WHITE)),
+        Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
+    ));
 
     // Spawn frog
     let texture_atlas = TextureAtlas {
@@ -100,16 +99,16 @@ fn setup(
         index: 0,
     };
     commands.spawn((
-        Sprite3d {
-            image: front_handle.image.as_ref().unwrap().clone(),
+        Sprite3dBuilder {
             pixels_per_metre: 8.,
-            transform: Transform {
-                translation: Vec3::new(0., 0.85, 0.),
-                ..default()
-            },
             ..default()
         }
-        .bundle_with_atlas(&mut sprite3d_params, texture_atlas),
+        .bundle_with_atlas(
+            &mut sprite3d_params,
+            front_handle.image.as_ref().unwrap().clone(),
+            texture_atlas,
+        ),
+        Transform::from_translation(Vec3::new(0., 0.85, 0.)),
         // Specify actor for entity
         View2dActor {
             actor: ActorMyAssets::Frog.into(),

@@ -36,7 +36,6 @@ pub(crate) fn view_changed_event(
 
             let viewsprite = viewsprite.unwrap();
 
-            #[cfg(feature = "2d")]
             if viewsprite.image.is_some() {
                 sprite.image = viewsprite.image.as_ref().unwrap().clone();
                 if let Some(atlas) = &mut sprite.texture_atlas {

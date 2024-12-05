@@ -15,12 +15,10 @@ bevy = { version = "0.15", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"],
 bevy_2dviewangle_macro = { version = "0.5", path = "./bevy-2dviewangle-macro" }
 
 [features]
-default = ["2d", "3d", "state"]
-3d = []
-2d = []
+default = ["state"]
 state = ["bevy/bevy_state"]
 
 [dev-dependencies]
 bevy = { version = "0.15" }
-bevy_sprite3d = "3.0"
+bevy_sprite3d = { version = "4.0", git = "https://github.com/dothanhtrung/bevy_sprite3d", branch = "main" }
 bevy_asset_loader = { version = "0.22", features = ["2d"] }
