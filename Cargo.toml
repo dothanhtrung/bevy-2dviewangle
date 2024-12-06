@@ -11,7 +11,7 @@ exclude = ["assets", "examples", ".cargo", "tests", "bevy-2dviewangle-macro"]
 categories = ["game-development"]
 
 [dependencies]
-bevy = { version = "0.15", features = ["bevy_asset", "bevy_pbr", "bevy_sprite"], default-features = false }
+bevy = { version = "0.15", features = ["bevy_asset", "bevy_sprite", "png"], default-features = false }
 bevy_2dviewangle_macro = { version = "0.5", path = "./bevy-2dviewangle-macro" }
 
 [features]
