@@ -119,7 +119,7 @@ pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 ///     mut action_event: EventWriter<ViewChanged>,
 /// ) {
 ///     for (mut act, e) in actors.iter_mut() {
-///             act.action = Action::Idle as u16;
+///             act.action = ActionMyAssets::Idle.into();
 ///             act.angle = Angle::Left;
 ///             // Send event to change to sprite sheet to another view
 ///             action_event.send(ViewChanged { entity: e });
@@ -178,7 +178,7 @@ impl ActorSpriteSheets {
     ///     mut texture_atlases: ResMut<Assets<TextureAtlasLayout>>,
     ///     mut animation2d: ResMut<ActorSpriteSheets>,
     /// ) {
-    ///     let layout = TextureAtlasLayout::from_grid(Vec2::new(16., 16.), 1, 3, None, None);
+    ///     let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
     ///     let my_assets = MyAssets {
     ///         idle_front: asset_server.load("frog_idle_front.png"),
     ///         idle_back: asset_server.load("frog_idle_back.png"),

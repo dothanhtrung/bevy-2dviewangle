@@ -8,8 +8,8 @@
 //! ```rust
 //! // Struct to store sprite sheet
 //! use bevy::prelude::*;
-//! use bevy_2dviewangle_macro::View2dCollection;
 //! use bevy_2dviewangle::{Angle, View2dActor, ViewChanged};
+//! use bevy_2dviewangle::View2dCollection;
 //!
 //! #[derive(View2dCollection, Default)]
 //! struct MyAssets {
@@ -47,6 +47,10 @@
 //! This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
 //!
 //! ```rust
+//! use bevy::prelude::{Handle, Image, Resource, TextureAtlasLayout};
+//! use bevy_asset_loader::prelude::AssetCollection;
+//! use bevy_2dviewangle::View2dCollection;
+//!
 //! #[derive(AssetCollection, View2dCollection, Resource)]
 //! pub struct MyAssets {
 //!     #[asset(path = "frog_idle_front.png")]
