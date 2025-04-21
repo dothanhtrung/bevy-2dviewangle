@@ -1,8 +1,7 @@
-// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+// Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
-use bevy::prelude::{Entity, EventReader, EventWriter, Query, Res, Sprite, Time};
-use bevy::sprite::TextureAtlasLayout;
+use bevy::prelude::{Entity, EventReader, EventWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
 
 use crate::component::*;
 
@@ -74,7 +73,7 @@ pub(crate) fn dynamic_actor_animate(
                             match *notify {
                                 Notification::LastFrame => {
                                     if atlas.index == layout.textures.len() - 1 {
-                                        event.send(LastFrame { entity });
+                                        event.write(LastFrame { entity });
                                     }
                                 }
                             }

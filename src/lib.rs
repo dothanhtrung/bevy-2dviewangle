@@ -1,4 +1,4 @@
-// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+// Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 //! Bevy plugin to easier to manage and switch texture base on view angles.
 //!
@@ -35,9 +35,9 @@
 //!     mut action_event: EventWriter<ViewChanged>,
 //! ) {
 //!     for (mut act, e) in actors.iter_mut() {
-//!         act.action = ActionMyAssets::Idle;
-//!         act.angle = AngleMyAssets::Right;
-//!         action_event.send(ViewChanged { entity: e });
+//!         act.action = ActionMyAssets::Idle.into();
+//!         act.angle = Angle::Right;
+//!         action_event.write(ViewChanged { entity: e });
 //!     }
 //! }
 //! ```
@@ -73,11 +73,10 @@
 
 use bevy::{
     app::{App, Plugin, Update},
-    prelude::{on_event, IntoSystemConfigs},
+    prelude::on_event,
 };
 
-#[cfg(feature = "state")]
-use bevy::prelude::{in_state, States};
+use bevy::prelude::{in_state, IntoScheduleConfigs, States};
 
 pub use component::*;
 use system::*;
@@ -95,17 +94,16 @@ macro_rules! plugin_systems {
 }
 
 /// The main plugin
-#[cfg(feature = "state")]
+
 #[derive(Default)]
 pub struct View2DAnglePlugin<T>
 where
     T: States,
 {
     /// List of game state that this plugin will run in
-    pub states: Option<Vec<T>>,
+    pub states: Vec<T>,
 }
 
-#[cfg(feature = "state")]
 impl<T> Plugin for View2DAnglePlugin<T>
 where
     T: States,
@@ -114,35 +112,34 @@ where
         app.add_event::<ViewChanged>()
             .add_event::<LastFrame>()
             .insert_resource(ActorSpriteSheets::default());
-        if let Some(states) = &self.states {
-            for state in states {
+        if self.states.is_empty() {
+            app.add_systems(Update, plugin_systems!());
+        } else {
+            for state in self.states.iter() {
                 app.add_systems(Update, plugin_systems!().run_if(in_state(state.clone())));
             }
-        } else {
-            app.add_systems(Update, plugin_systems!());
         }
     }
 }
 
-#[cfg(feature = "state")]
 impl<T> View2DAnglePlugin<T>
 where
     T: States,
 {
     pub fn new(states: Vec<T>) -> Self {
-        Self { states: Some(states) }
+        Self { states }
     }
 }
 
+#[derive(States, Clone, Debug, Hash, Eq, PartialEq)]
+pub enum DummyState {}
+
 /// Use this if you don't care to state and want this plugin's systems run all the time.
 #[derive(Default)]
-pub struct View2DAnglePluginNoState;
+pub struct View2DAnglePluginAnyState;
 
-impl Plugin for View2DAnglePluginNoState {
-    fn build(&self, app: &mut App) {
-        app.add_event::<ViewChanged>()
-            .add_event::<LastFrame>()
-            .insert_resource(ActorSpriteSheets::default())
-            .add_systems(Update, plugin_systems!());
+impl View2DAnglePluginAnyState {
+    pub fn any() -> View2DAnglePlugin<DummyState> {
+        View2DAnglePlugin::new(Vec::new())
     }
 }

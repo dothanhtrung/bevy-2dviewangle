@@ -53,7 +53,7 @@ pub fn input(
             act.action = action;
             act.angle = direction;
             // Send event to change to sprite sheet to another view
-            action_event.send(ViewChanged { entity: e });
+            action_event.write(ViewChanged { entity: e });
         }
     }
 }

@@ -1,3 +1,5 @@
+<div align="center">
+
 bevy_2dviewangle
 ================
 
@@ -6,9 +8,14 @@ bevy_2dviewangle
 [![dependency status](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/kimtinh/bevy-2dviewangle)
 [![pipeline status](https://gitlab.com/kimtinh/bevy-2dviewangle/badges/master/pipeline.svg)](https://gitlab.com/kimtinh/bevy-2dviewangle/-/commits/master)
 
+[![Gitlab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/kimtinh/bevy-2dviewangle)
+[![Github](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/dothanhtrung/bevy-2dviewangle)
+
 ![](examples/2d.mp4)
 
 ![](examples/3d.mp4)
+
+</div>
 
 Bevy plugin to easier to manage and switch texture base on view angles.
 
@@ -45,8 +52,8 @@ fn switch_sprite(
 ) {
     for (mut act, e) in actors.iter_mut() {
         act.action = ActionMyAssets::Idle;
-        act.angle = AngleMyAssets::Right;
-        action_event.send(ViewChanged { entity: e });
+        act.angle = Angle::Right;
+        action_event.write(ViewChanged { entity: e });
     }
 }
 ```
@@ -85,9 +92,10 @@ Please see [LICENSE](./LICENSE).
 Compatible Bevy Versions
 ------------------------
 
-| bevy | bevy_2dviewangle     |
-|------|----------------------|
-| 0.15 | 0.9, branch `master` |
-| 0.14 | 0.7-0.8              |
-| 0.13 | 0.2-0.6              |
-| 0.12 | 0.1                  |
+| bevy | bevy_2dviewangle |
+|------|------------------|
+| 0.16 | 0.10             |
+| 0.15 | 0.9              |
+| 0.14 | 0.7-0.8          |
+| 0.13 | 0.2-0.6          |
+| 0.12 | 0.1              |

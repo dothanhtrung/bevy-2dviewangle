@@ -1,8 +1,6 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-
-use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePluginNoState, View2dActor};
-
+use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePluginAnyState, View2dActor};
 use crate::common::{input, ActorMyAssets, MyAssets};
 
 mod common;
@@ -18,7 +16,7 @@ fn main() {
             ..default()
         }))
         // Add the plugin
-        .add_plugins(View2DAnglePluginNoState)
+        .add_plugins(View2DAnglePluginAnyState::any())
         .add_systems(Startup, setup)
         .add_systems(Update, input)
         .run();

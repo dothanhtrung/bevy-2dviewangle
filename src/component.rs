@@ -1,10 +1,9 @@
-// Copyright 2024 Trung Do <dothanhtrung@pm.me>
+// Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use std::collections::HashMap;
 
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, Timer};
-use bevy::sprite::TextureAtlasLayout;
+use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, TextureAtlasLayout, Timer};
 pub use bevy_2dviewangle_macro::View2dCollection;
 
 /// The trait to use in derive macro. You won't need to implement this trait.

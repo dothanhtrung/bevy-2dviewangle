@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
-use bevy_sprite3d::{Sprite3dBuilder, Sprite3dParams, Sprite3dPlugin};
+use bevy_sprite3d::{Sprite3d, Sprite3dPlugin};
 
-use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginNoState, View2dActor};
+use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginAnyState, View2dActor};
 
 use crate::common::{input, ActionMyAssets, ActorMyAssets, MyAssets};
 
@@ -27,7 +27,7 @@ fn main() {
             ..default()
         }))
         // Add the plugin
-        .add_plugins(View2DAnglePluginNoState)
+        .add_plugins(View2DAnglePluginAnyState::any())
         .add_plugins(Sprite3dPlugin)
         .init_state::<GameState>()
         .add_systems(Startup, load_texture)
@@ -56,8 +56,9 @@ fn load_texture(
 fn setup(
     mut commands: Commands,
     animation2d: Res<ActorSpriteSheets>,
-    mut sprite3d_params: Sprite3dParams,
     mut next_state: ResMut<NextState<GameState>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let front_handle = animation2d
         .get(&(ActorMyAssets::Frog.into()))
@@ -88,8 +89,8 @@ fn setup(
 
     // plane
     commands.spawn((
-        Mesh3d(sprite3d_params.meshes.add(Circle::new(4.0))),
-        MeshMaterial3d(sprite3d_params.materials.add(Color::WHITE)),
+        Mesh3d(meshes.add(Circle::new(4.0))),
+        MeshMaterial3d(materials.add(Color::WHITE)),
         Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
     ));
 
@@ -99,15 +100,15 @@ fn setup(
         index: 0,
     };
     commands.spawn((
-        Sprite3dBuilder {
+        Sprite3d {
             pixels_per_metre: 8.,
             ..default()
-        }
-        .bundle_with_atlas(
-            &mut sprite3d_params,
-            front_handle.image.as_ref().unwrap().clone(),
-            texture_atlas,
-        ),
+        },
+        Sprite {
+            image: front_handle.image.as_ref().unwrap().clone(),
+            texture_atlas: Some(texture_atlas),
+            ..default()
+        },
         Transform::from_translation(Vec3::new(0., 0.85, 0.)),
         // Specify actor for entity
         View2dActor {
