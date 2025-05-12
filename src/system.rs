@@ -23,13 +23,24 @@ pub(crate) fn view_changed_event(
                 view.flipped = false;
             }
 
+            // TODO: Clean code
             if viewsprite.is_none() {
                 viewsprite = get_opposite_view(&animation2d[&view.actor][&action], view.angle);
                 if viewsprite.is_some() {
                     sprite.flip_x = true;
                     view.flipped = true;
-                } else {
-                    return;
+                }
+            }
+            if viewsprite.is_none() {
+                viewsprite = animation2d[&view.actor][&action].get(&Angle::Any);
+                if viewsprite.is_none() {
+                    viewsprite = get_opposite_view(&animation2d[&view.actor][&action], Angle::Any);
+                    if viewsprite.is_some() {
+                        sprite.flip_x = true;
+                        view.flipped = true;
+                    } else {
+                        return;
+                    }
                 }
             }
 
@@ -38,7 +49,9 @@ pub(crate) fn view_changed_event(
             if viewsprite.image.is_some() {
                 sprite.image = viewsprite.image.as_ref().unwrap().clone();
                 if let Some(atlas) = &mut sprite.texture_atlas {
-                    atlas.layout = viewsprite.layout.as_ref().unwrap().clone();
+                    if let Some(view_atlas) = &viewsprite.layout {
+                        atlas.layout = view_atlas.clone();
+                    }
                 }
             }
         }
