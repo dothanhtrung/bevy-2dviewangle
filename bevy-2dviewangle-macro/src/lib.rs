@@ -119,7 +119,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
             let expanded = quote! {
                 use bevy_2dviewangle::*;
 
-                #[derive(Default, Eq, PartialEq)]
+                #[derive(Default, Eq, PartialEq, Clone)]
                 #[repr(u64)]
                 pub enum #actor_enum_name {
                     #[default]
@@ -133,7 +133,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                     }
                 }
 
-                #[derive(Default, Eq, PartialEq)]
+                #[derive(Default, Eq, PartialEq, Clone)]
                 #[repr(u16)]
                 pub enum #action_enum_name {
                     #[default]
