@@ -1,7 +1,7 @@
 // Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
-use bevy::prelude::{Entity, EventReader, EventWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
+use bevy::prelude::{Commands, Entity, EventReader, Query, Res, Sprite, TextureAtlasLayout, Time};
 
 use crate::component::*;
 
@@ -58,10 +58,10 @@ fn get_opposite_view(texture: &AngleSpriteSheets, direction: Angle) -> Option<&S
 }
 
 pub(crate) fn dynamic_actor_animate(
+    mut commands: Commands,
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
     mut query: Query<(&mut View2dActor, &mut Sprite, Entity)>,
-    mut event: EventWriter<LastFrame>,
 ) {
     for (mut actor, mut sprite, entity) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
@@ -73,7 +73,7 @@ pub(crate) fn dynamic_actor_animate(
                             match *notify {
                                 Notification::LastFrame => {
                                     if atlas.index == layout.textures.len() - 1 {
-                                        event.write(LastFrame { entity });
+                                        commands.trigger_targets(LastFrame, entity);
                                     }
                                 }
                             }

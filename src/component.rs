@@ -121,7 +121,7 @@ pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 ///             act.action = ActionMyAssets::Idle.into();
 ///             act.angle = Angle::Left;
 ///             // Send event to change to sprite sheet to another view
-///             action_event.send(ViewChanged { entity: e });
+///             action_event.write(ViewChanged { entity: e });
 ///         }
 ///     }
 /// }
@@ -133,9 +133,7 @@ pub struct ViewChanged {
 
 /// Sent when animation went to the last frame
 #[derive(Event)]
-pub struct LastFrame {
-    pub entity: Entity,
-}
+pub struct LastFrame;
 
 impl AngleSpriteSheets {
     /// Store spritesheets from list of Angle and SpriteSheet in case you don't want to use derive `View2dCollection`.
