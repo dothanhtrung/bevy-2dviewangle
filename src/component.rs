@@ -96,6 +96,8 @@ pub enum Notification {
 pub struct View2dActor {
     pub angle: Angle,
     pub action: u16,
+    /// Next action when the last frame of the current action is done
+    pub next_action: Vec<u16>,
     pub actor: u64,
     pub flipped: bool,
     pub animation_timer: Option<Timer>,
@@ -106,7 +108,7 @@ pub struct View2dActor {
 #[derive(Resource, Deref, DerefMut, Default)]
 pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 
-/// Event to send when want to change the spritesheet.
+/// Notify the view is changed.
 ///
 /// Example:
 /// ```rust

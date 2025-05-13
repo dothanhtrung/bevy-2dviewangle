@@ -1,7 +1,7 @@
 // Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
-use bevy::prelude::{Commands, Entity, EventReader, Query, Res, Sprite, TextureAtlasLayout, Time};
+use bevy::prelude::{Commands, Entity, EventReader, EventWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
 
 use crate::component::*;
 
@@ -75,6 +75,7 @@ pub(crate) fn dynamic_actor_animate(
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
     mut query: Query<(&mut View2dActor, &mut Sprite, Entity)>,
+    mut event: EventWriter<ViewChanged>,
 ) {
     for (mut actor, mut sprite, entity) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
@@ -92,6 +93,13 @@ pub(crate) fn dynamic_actor_animate(
                             }
                         }
 
+                        if atlas.index == layout.textures.len() - 1  {
+                            if let Some(next_action) = actor.next_action.first() {
+                                actor.action = *next_action;
+                                event.write(ViewChanged { entity });
+                                actor.next_action.remove(0);
+                            }
+                        }
                         atlas.index = (atlas.index + 1) % layout.textures.len();
                     }
                 }

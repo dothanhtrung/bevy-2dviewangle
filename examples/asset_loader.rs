@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePlugin, View2dActor, View2dCollection};
+use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
 use crate::common::input;
 

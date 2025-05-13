@@ -1,7 +1,7 @@
+use crate::common::{input, ActorMyAssets, MyAssets};
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePluginAnyState, View2dActor};
-use crate::common::{input, ActorMyAssets, MyAssets};
 
 mod common;
 
@@ -39,7 +39,7 @@ fn setup(
     // Load into collection
     animation2d.load_asset_loader(&my_assets);
 
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
     commands.spawn((
         Sprite {
             image: my_assets.idle_front.clone(),
