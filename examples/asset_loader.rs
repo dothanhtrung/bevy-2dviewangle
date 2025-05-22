@@ -3,10 +3,6 @@ use bevy::window::WindowResolution;
 use bevy_2dviewangle::{ActorSpriteSheets, View2DAnglePlugin, View2dActor, View2dCollection};
 use bevy_asset_loader::prelude::{AssetCollection, ConfigureLoadingState, LoadingState, LoadingStateAppExt};
 
-use crate::common::input;
-
-mod common;
-
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, States)]
 enum MyStates {
     #[default]
@@ -75,4 +71,37 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorSpriteSheets>, my_
             ..default()
         },
     ));
+}
+
+pub fn input(
+    kb_input: Res<ButtonInput<KeyCode>>,
+    mut actors: Query<(&mut View2dActor, Entity)>,
+    mut action_event: EventWriter<ViewChanged>,
+) {
+    for (mut act, e) in actors.iter_mut() {
+        let mut action = act.action;
+        let mut direction = act.angle;
+
+        // Update action id and direction of actor
+        if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
+            action = ActionMyAssets::Idle.into();
+            direction = Angle::Left;
+        } else if kb_input.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
+            action = ActionMyAssets::Idle.into();
+            direction = Angle::Right;
+        } else if kb_input.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
+            action = ActionMyAssets::Idle.into();
+            direction = Angle::Back;
+        } else if kb_input.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
+            action = ActionMyAssets::Idle.into();
+            direction = Angle::Front;
+        }
+
+        if action != act.action || direction != act.angle {
+            act.action = action;
+            act.angle = direction;
+            // Send event to change to sprite sheet to another view
+            action_event.write(ViewChanged { entity: e });
+        }
+    }
 }
