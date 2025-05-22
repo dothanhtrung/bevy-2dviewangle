@@ -5,6 +5,9 @@ use bevy::prelude::{Commands, Entity, EventReader, EventWriter, Query, Res, Spri
 
 use crate::component::*;
 
+const ACTION_ANY: u16 = 0;
+const ACTOR_ANY: u64 = 0;
+
 /// Check on `ViewChanged` event and change to corresponding spritesheet.
 /// If spritesheet for an angle does not exist, it will try to flip the spritesheet of the opposite angle.
 /// If the opposite is not available, spritesheet will not change.
@@ -15,8 +18,22 @@ pub(crate) fn view_changed_event(
 ) {
     for event in events.read() {
         if let Ok((mut view, mut sprite)) = sprites.get_mut(event.entity) {
-            let action = view.action;
-            let mut viewsprite = animation2d[&view.actor][&action].get(&view.angle);
+            let mut action = view.action;
+            let mut actor = view.actor;
+
+            let mut viewsprite = None;
+            for _actor in [&view.actor, &ACTOR_ANY] {
+                if let Some(actor_val) = animation2d.get(_actor) {
+                    for _action in [&view.action, &ACTION_ANY] {
+                        if let Some(action_val) = actor_val.get(_action) {
+                            viewsprite = action_val.get(&view.angle);
+                            actor = *_actor;
+                            action = *_action;
+                            break;
+                        }
+                    }
+                }
+            }
 
             if view.flipped {
                 sprite.flip_x = false;
@@ -25,16 +42,16 @@ pub(crate) fn view_changed_event(
 
             // TODO: Clean code
             if viewsprite.is_none() {
-                viewsprite = get_opposite_view(&animation2d[&view.actor][&action], view.angle);
+                viewsprite = get_opposite_view(&animation2d[&actor][&action], view.angle);
                 if viewsprite.is_some() {
                     sprite.flip_x = true;
                     view.flipped = true;
                 }
             }
             if viewsprite.is_none() {
-                viewsprite = animation2d[&view.actor][&action].get(&Angle::Any);
+                viewsprite = animation2d[&actor][&action].get(&Angle::Any);
                 if viewsprite.is_none() {
-                    viewsprite = get_opposite_view(&animation2d[&view.actor][&action], Angle::Any);
+                    viewsprite = get_opposite_view(&animation2d[&actor][&action], Angle::Any);
                     if viewsprite.is_some() {
                         sprite.flip_x = true;
                         view.flipped = true;
@@ -93,7 +110,7 @@ pub(crate) fn dynamic_actor_animate(
                             }
                         }
 
-                        if atlas.index == layout.textures.len() - 1  {
+                        if atlas.index == layout.textures.len() - 1 {
                             if let Some(next_action) = actor.next_action.first() {
                                 actor.action = *next_action;
                                 event.write(ViewChanged { entity });
