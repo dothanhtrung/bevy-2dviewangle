@@ -18,6 +18,8 @@ variables:
 check:
   stage: build
   script:
+    - cargo install cargo-sweep
+    - cargo sweep -t 60
     - rustc --version && cargo --version  # Print version info for debugging
     - cargo check --example 2d
     - cargo check --example 3d
