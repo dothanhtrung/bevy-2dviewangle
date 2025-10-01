@@ -32,7 +32,7 @@
 //! // Change the sprite sheet by sending event
 //! fn switch_sprite(
 //!     mut actors: Query<(&mut View2dActor, Entity)>,
-//!     mut action_event: EventWriter<ViewChanged>,
+//!     mut action_event: MessageWriter<ViewChanged>,
 //! ) {
 //!     for (mut act, e) in actors.iter_mut() {
 //!         act.action = ActionMyAssets::Idle.into();
@@ -73,7 +73,7 @@
 
 use bevy::{
     app::{App, Plugin, Update},
-    prelude::on_event,
+    prelude::on_message,
 };
 
 use bevy::prelude::{in_state, IntoScheduleConfigs, States};
@@ -87,7 +87,7 @@ mod system;
 macro_rules! plugin_systems {
     () => {
         (
-            view_changed_event.run_if(on_event::<ViewChanged>),
+            view_changed_event.run_if(on_message::<ViewChanged>),
             dynamic_actor_animate,
         )
     };
@@ -109,8 +109,7 @@ where
     T: States,
 {
     fn build(&self, app: &mut App) {
-        app.add_event::<ViewChanged>()
-            .add_event::<LastFrame>()
+        app.add_message::<ViewChanged>()
             .insert_resource(ActorSpriteSheets::default());
         if self.states.is_empty() {
             app.add_systems(Update, plugin_systems!());

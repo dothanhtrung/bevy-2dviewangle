@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, Event, Image, Resource, TextureAtlasLayout, Timer};
+use bevy::prelude::{Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Resource, TextureAtlasLayout, Timer};
 pub use bevy_2dviewangle_macro::View2dCollection;
 
 /// The trait to use in derive macro. You won't need to implement this trait.
@@ -117,7 +117,7 @@ pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 ///
 /// pub fn input(
 ///     mut actors: Query<(&mut View2dActor, Entity)>,
-///     mut action_event: EventWriter<ViewChanged>,
+///     mut action_event: MessageWriter<ViewChanged>,
 /// ) {
 ///     for (mut act, e) in actors.iter_mut() {
 ///             act.action = ActionMyAssets::Idle.into();
@@ -128,14 +128,16 @@ pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 ///     }
 /// }
 /// ```
-#[derive(Event)]
+#[derive(Message)]
 pub struct ViewChanged {
     pub entity: Entity,
 }
 
 /// Sent when animation went to the last frame
-#[derive(Event)]
-pub struct LastFrame;
+#[derive(EntityEvent)]
+pub struct LastFrame {
+    pub entity: Entity,
+}
 
 impl AngleSpriteSheets {
     /// Store spritesheets from list of Angle and SpriteSheet in case you don't want to use derive `View2dCollection`.

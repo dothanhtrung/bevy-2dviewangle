@@ -1,7 +1,7 @@
 // Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
-use bevy::prelude::{Commands, Entity, EventReader, EventWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
+use bevy::prelude::{Commands, Entity, MessageReader, MessageWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
 
 use crate::component::*;
 
@@ -12,7 +12,7 @@ const ACTOR_ANY: u64 = 0;
 /// If spritesheet for an angle does not exist, it will try to flip the spritesheet of the opposite angle.
 /// If the opposite is not available, spritesheet will not change.
 pub(crate) fn view_changed_event(
-    mut events: EventReader<ViewChanged>,
+    mut events: MessageReader<ViewChanged>,
     mut sprites: Query<(&mut View2dActor, &mut Sprite)>,
     animation2d: Res<ActorSpriteSheets>,
 ) {
@@ -92,7 +92,7 @@ pub(crate) fn dynamic_actor_animate(
     time: Res<Time>,
     atlases: Res<Assets<TextureAtlasLayout>>,
     mut query: Query<(&mut View2dActor, &mut Sprite, Entity)>,
-    mut event: EventWriter<ViewChanged>,
+    mut event: MessageWriter<ViewChanged>,
 ) {
     for (mut actor, mut sprite, entity) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
@@ -104,7 +104,7 @@ pub(crate) fn dynamic_actor_animate(
                             match *notify {
                                 Notification::LastFrame => {
                                     if atlas.index == layout.textures.len() - 1 {
-                                        commands.trigger_targets(LastFrame, entity);
+                                        commands.trigger(LastFrame { entity });
                                     }
                                 }
                             }

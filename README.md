@@ -48,7 +48,7 @@ struct MyAssets {
 // Change the sprite sheet by sending event
 fn switch_sprite(
     mut actors: Query<(&mut View2dActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
+    mut action_event: MessageWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         act.action = ActionMyAssets::Idle;

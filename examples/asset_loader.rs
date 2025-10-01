@@ -34,7 +34,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("2D demo with asset loader"),
-                resolution: WindowResolution::new(256., 256.),
+                resolution: WindowResolution::new(256, 256),
                 ..default()
             }),
             ..default()
@@ -76,7 +76,7 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorSpriteSheets>, my_
 pub fn input(
     kb_input: Res<ButtonInput<KeyCode>>,
     mut actors: Query<(&mut View2dActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
+    mut action_event: MessageWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;

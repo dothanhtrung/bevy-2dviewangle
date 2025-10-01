@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::render::camera::Exposure;
 use bevy::window::WindowResolution;
 use bevy_2dviewangle_macro::View2dCollection;
 use bevy_sprite3d::{Sprite3d, Sprite3dPlugin};
@@ -18,7 +17,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
             primary_window: Some(Window {
                 title: String::from("3D demo"),
-                resolution: WindowResolution::new(256., 256.),
+                resolution: WindowResolution::new(256, 256),
                 ..default()
             }),
             ..default()
@@ -101,7 +100,6 @@ fn setup(
     // camera
     commands.spawn((
         Camera3d::default(),
-        Exposure::INDOOR,
         Transform::from_xyz(0., 2.5, 3.).looking_at(Vec3::Y, Vec3::Y),
     ));
 
@@ -140,7 +138,7 @@ fn setup(
 pub fn input(
     kb_input: Res<ButtonInput<KeyCode>>,
     mut actors: Query<(&mut View2dActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
+    mut action_event: MessageWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;
