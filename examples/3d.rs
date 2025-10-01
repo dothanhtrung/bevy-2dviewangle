@@ -138,7 +138,7 @@ fn setup(
 pub fn input(
     kb_input: Res<ButtonInput<KeyCode>>,
     mut actors: Query<(&mut View2dActor, Entity)>,
-    mut action_event: EventWriter<ViewChanged>,
+    mut action_event: MessageWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
         let mut action = act.action;

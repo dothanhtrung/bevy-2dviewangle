@@ -117,7 +117,7 @@ pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
 ///
 /// pub fn input(
 ///     mut actors: Query<(&mut View2dActor, Entity)>,
-///     mut action_event: EventWriter<ViewChanged>,
+///     mut action_event: MessageWriter<ViewChanged>,
 /// ) {
 ///     for (mut act, e) in actors.iter_mut() {
 ///             act.action = ActionMyAssets::Idle.into();
