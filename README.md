@@ -51,7 +51,7 @@ fn switch_sprite(
     mut action_event: MessageWriter<ViewChanged>,
 ) {
     for (mut act, e) in actors.iter_mut() {
-        act.action = ActionMyAssets::Idle;
+        act.action = get_act_id("idle");
         act.angle = Angle::Right;
         action_event.write(ViewChanged { entity: e });
     }
@@ -94,7 +94,7 @@ Compatible Bevy Versions
 
 | bevy | bevy_2dviewangle |
 |------|------------------|
-| 0.17 | 0.11             |
+| 0.17 | 0.11-0.12        |
 | 0.16 | 0.10             |
 | 0.15 | 0.9              |
 | 0.14 | 0.7-0.8          |

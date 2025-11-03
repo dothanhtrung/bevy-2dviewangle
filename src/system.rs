@@ -5,7 +5,7 @@ use bevy::prelude::{Commands, Entity, MessageReader, MessageWriter, Query, Res, 
 
 use crate::component::*;
 
-const ACTION_ANY: u16 = 0;
+const ACTION_ANY: u64 = 0;
 const ACTOR_ANY: u64 = 0;
 
 /// Check on `ViewChanged` event and change to corresponding spritesheet.

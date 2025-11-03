@@ -3,8 +3,11 @@
 use std::collections::HashMap;
 
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Resource, TextureAtlasLayout, Timer};
+use bevy::prelude::{
+    Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Resource, TextureAtlasLayout, Timer,
+};
 pub use bevy_2dviewangle_macro::View2dCollection;
+use xxhash_rust::xxh3::xxh3_64;
 
 /// The trait to use in derive macro. You won't need to implement this trait.
 ///
@@ -31,31 +34,12 @@ pub use bevy_2dviewangle_macro::View2dCollection;
 ///     pub layout: Handle<TextureAtlasLayout>,
 /// }
 /// ```
-///
-/// Two enums will be generated base on declared actor and action:
-/// ```rust
-/// #[derive(Default, Eq, PartialEq)]
-/// #[repr(u64)]
-/// pub enum ActorMyAssets {
-///     #[default]
-///     Any,
-///     Frog,
-/// }
-///
-/// #[derive(Default, Eq, PartialEq)]
-/// #[repr(u16)]
-/// pub enum ActionMyAssets {
-///     #[default]
-///     Any,
-///     Idle,
-/// }
-/// ```
 pub trait View2dCollection {
     fn get_all(
         &self,
     ) -> Vec<(
         Option<u64>,
-        Option<u16>,
+        Option<u64>,
         Option<Angle>,
         Option<&Handle<Image>>,
         Option<&Handle<TextureAtlasLayout>>,
@@ -63,7 +47,7 @@ pub trait View2dCollection {
 }
 
 /// All supported angles.
-#[derive(Default, Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Default, Clone, Copy, Eq, PartialEq, Hash, Debug)]
 pub enum Angle {
     Any,
     #[default]
@@ -95,18 +79,18 @@ pub enum Notification {
 #[derive(Component, Default)]
 pub struct View2dActor {
     pub angle: Angle,
-    pub action: u16,
+    pub action: u64,
     /// Next action when the last frame of the current action is done
-    pub next_action: Vec<u16>,
+    pub next_action: Vec<u64>,
     pub actor: u64,
     pub flipped: bool,
     pub animation_timer: Option<Timer>,
     pub notify: Vec<Notification>,
 }
 
-/// The resource that stores every spritesheets. Organized by actor id (u64) and action id (u16)
+/// The resource that stores every spritesheets. Organized by actor id (u32) and action id (u16)
 #[derive(Resource, Deref, DerefMut, Default)]
-pub struct ActorSpriteSheets(HashMap<u64, HashMap<u16, AngleSpriteSheets>>);
+pub struct ActorSpriteSheets(HashMap<u64, HashMap<u64, AngleSpriteSheets>>);
 
 /// Notify the view is changed.
 ///
@@ -194,6 +178,7 @@ impl ActorSpriteSheets {
     pub fn load_asset_loader<T: View2dCollection>(&mut self, loader: &T) {
         let mut actor_id = 0;
         let mut action_id = 0;
+
         for (actor, action, angle, image, atlas_layout) in loader.get_all() {
             actor_id = actor.unwrap_or(actor_id);
             action_id = action.unwrap_or(action_id);
@@ -248,4 +233,9 @@ impl ActorSpriteSheets {
             }
         }
     }
+}
+
+/// Convert actor/action to number id
+pub fn get_act_id(act: &str) -> u64 {
+    xxh3_64(act.as_bytes())
 }

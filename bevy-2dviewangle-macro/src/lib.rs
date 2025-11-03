@@ -3,25 +3,23 @@
 use proc_macro::TokenStream;
 use std::collections::HashMap;
 
-use quote::{format_ident, quote};
+use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+use xxhash_rust::xxh3::xxh3_64;
 
-macro_rules! enumize {
-    ($k: expr, $e: expr, $m: expr, $c: expr, $v: expr) => {{
+macro_rules! numberize {
+    ($key: expr, $map: expr, $value: expr) => {{
         let num;
-        let key_str = capitalize_first_letter(&$k.value());
-        if $m.contains_key(&key_str) {
-            num = *$m.get(&key_str).unwrap();
+        let key_str = $key.value();
+        if $map.contains_key(&key_str) {
+            num = *$map.get(&key_str).unwrap();
         } else {
-            $c += 1;
-            let variant_name = syn::Ident::new(&key_str, $k.span());
-            $e.push(quote! {#variant_name});
-            $m.insert(key_str, $c);
-            num = $c;
+            num = xxh3_64(key_str.as_bytes());
+            $map.insert(key_str, num);
         }
-        $v = quote! {Some(#num)};
-    }}
+        $value = quote! {Some(#num)};
+    }};
 }
 
 fn capitalize_first_letter(s: &str) -> String {
@@ -45,12 +43,8 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
     if let Data::Struct(data_struct) = &ast.data {
         if let Fields::Named(fields) = &data_struct.fields {
             let mut fields_info = Vec::new();
-            let mut actor_enum = Vec::new();
             let mut actor_map = HashMap::new();
-            let mut actor_count: u64 = 0;
-            let mut action_enum = Vec::new();
             let mut action_map = HashMap::new();
-            let mut action_count: u16 = 0;
 
             for field in fields.named.iter() {
                 let field_name = field.ident.as_ref().unwrap();
@@ -71,12 +65,12 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                         match attribute {
                             Meta::NameValue(named_value) if named_value.path.is_ident("actor") => {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    enumize!(key, actor_enum, actor_map, actor_count, actor_value);
+                                    numberize!(key, actor_map, actor_value);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    enumize!(key, action_enum, action_map, action_count, action_value);
+                                    numberize!(key, action_map, action_value);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
@@ -114,44 +108,14 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 fields_info.push(field_info);
             }
 
-            let actor_enum_name = format_ident!("Actor{}", struct_name);
-            let action_enum_name = format_ident!("Action{}", struct_name);
             let expanded = quote! {
                 use bevy_2dviewangle::*;
-
-                #[derive(Default, Eq, PartialEq, Clone)]
-                #[repr(u64)]
-                pub enum #actor_enum_name {
-                    #[default]
-                    Any,
-                    #( #actor_enum ),*
-                }
-
-                impl From<#actor_enum_name> for u64 {
-                    fn from(actor: #actor_enum_name) -> Self {
-                        actor as u64
-                    }
-                }
-
-                #[derive(Default, Eq, PartialEq, Clone)]
-                #[repr(u16)]
-                pub enum #action_enum_name {
-                    #[default]
-                    Any,
-                    #( #action_enum ),*
-                }
-
-                impl From<#action_enum_name> for u16 {
-                    fn from(action: #action_enum_name) -> Self {
-                        action as u16
-                    }
-                }
 
                 #[automatically_derived]
                 impl View2dCollection for #struct_name {
                     fn get_all(&self) -> Vec<(
                         Option<u64>,
-                        Option<u16>,
+                        Option<u64>,
                         Option<Angle>,
                         Option<&Handle<Image>>,
                         Option<&Handle<TextureAtlasLayout>>,
