@@ -72,11 +72,19 @@
 //! ```
 
 use bevy::{
-    app::{App, Plugin, Update},
+    app::{
+        App,
+        Plugin,
+        Update,
+    },
     prelude::on_message,
 };
 
-use bevy::prelude::{in_state, IntoScheduleConfigs, States};
+use bevy::prelude::{
+    in_state,
+    IntoScheduleConfigs,
+    States,
+};
 
 pub use component::*;
 use system::*;
@@ -109,8 +117,7 @@ where
     T: States,
 {
     fn build(&self, app: &mut App) {
-        app
-            .register_type::<View2dActor>()
+        app.register_type::<View2dActor>()
             .add_message::<ViewChanged>()
             .insert_resource(ActorSpriteSheets::default());
         if self.states.is_empty() {

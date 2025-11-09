@@ -3,7 +3,20 @@
 use std::collections::HashMap;
 
 use bevy::asset::Handle;
-use bevy::prelude::{Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Reflect, ReflectComponent, Resource, TextureAtlasLayout, Timer};
+use bevy::prelude::{
+    Component,
+    Deref,
+    DerefMut,
+    Entity,
+    EntityEvent,
+    Image,
+    Message,
+    Reflect,
+    ReflectComponent,
+    Resource,
+    TextureAtlasLayout,
+    Timer,
+};
 pub use bevy_2dviewangle_macro::View2dCollection;
 use xxhash_rust::xxh3::xxh3_64;
 

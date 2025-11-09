@@ -1,7 +1,17 @@
 // Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
-use bevy::prelude::{Commands, Entity, MessageReader, MessageWriter, Query, Res, Sprite, TextureAtlasLayout, Time};
+use bevy::prelude::{
+    Commands,
+    Entity,
+    MessageReader,
+    MessageWriter,
+    Query,
+    Res,
+    Sprite,
+    TextureAtlasLayout,
+    Time,
+};
 
 use crate::component::*;
 
