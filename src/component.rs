@@ -3,9 +3,7 @@
 use std::collections::HashMap;
 
 use bevy::asset::Handle;
-use bevy::prelude::{
-    Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Resource, TextureAtlasLayout, Timer,
-};
+use bevy::prelude::{Component, Deref, DerefMut, Entity, EntityEvent, Image, Message, Reflect, ReflectComponent, Resource, TextureAtlasLayout, Timer};
 pub use bevy_2dviewangle_macro::View2dCollection;
 use xxhash_rust::xxh3::xxh3_64;
 
@@ -47,7 +45,7 @@ pub trait View2dCollection {
 }
 
 /// All supported angles.
-#[derive(Default, Clone, Copy, Eq, PartialEq, Hash, Debug)]
+#[derive(Reflect, Default, Clone, Copy, Eq, PartialEq, Hash, Debug)]
 pub enum Angle {
     Any,
     #[default]
@@ -72,11 +70,13 @@ pub struct SpriteSheet {
 #[derive(Default, Deref, DerefMut)]
 pub struct AngleSpriteSheets(HashMap<Angle, SpriteSheet>);
 
+#[derive(Reflect)]
 pub enum Notification {
     LastFrame,
 }
 
-#[derive(Component, Default)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct View2dActor {
     pub angle: Angle,
     pub action: u64,

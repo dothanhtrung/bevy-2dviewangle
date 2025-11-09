@@ -109,7 +109,9 @@ where
     T: States,
 {
     fn build(&self, app: &mut App) {
-        app.add_message::<ViewChanged>()
+        app
+            .register_type::<View2dActor>()
+            .add_message::<ViewChanged>()
             .insert_resource(ActorSpriteSheets::default());
         if self.states.is_empty() {
             app.add_systems(Update, plugin_systems!());
