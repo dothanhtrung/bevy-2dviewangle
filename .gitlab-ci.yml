@@ -1,7 +1,7 @@
 image: "dothanhtrung/bevy-dev:latest"
 
 before_script:
-  - sed -i '/^target-dir =/d' .cargo/config.toml
+  - rm -f .cargo/config.toml
 
 cache: &global_cache
   key: cargo_cache
@@ -18,9 +18,8 @@ variables:
 check:
   stage: build
   script:
-    - cargo install cargo-sweep
-    - cargo sweep -t 60 || true
     - rustc --version && cargo --version  # Print version info for debugging
+    - /usr/local/cargo/bin/cargo-sweep sweep -t 60 || true
     - cargo check --example 2d
     - cargo check --example 3d
     - cargo check --example asset_loader
