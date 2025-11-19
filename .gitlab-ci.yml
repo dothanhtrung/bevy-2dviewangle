@@ -21,6 +21,7 @@ check:
     - rustc --version && cargo --version  # Print version info for debugging
     - /usr/local/cargo/bin/cargo-sweep sweep -t 60 || true
     - cargo check --example 2d
+    - cargo check --no-default-features --example 2d
     - cargo check --example 3d
     - cargo check --example asset_loader
   rules:

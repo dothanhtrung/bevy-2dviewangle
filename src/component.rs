@@ -71,6 +71,7 @@ pub trait View2dCollection {
 }
 
 /// All supported angles.
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Reflect, Default, Clone, Copy, Eq, PartialEq, Hash, Debug)]
 pub enum Angle {
     Any,
@@ -96,12 +97,14 @@ pub struct SpriteSheet {
 #[derive(Default, Deref, DerefMut)]
 pub struct AngleSpriteSheets(HashMap<Angle, SpriteSheet>);
 
-#[derive(Reflect)]
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
+#[derive(Reflect, Clone)]
 pub enum Notification {
     LastFrame,
 }
 
-#[derive(Component, Reflect, Default)]
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
+#[derive(Component, Reflect, Default, Clone)]
 #[reflect(Component)]
 pub struct View2dActor {
     pub angle: Angle,
