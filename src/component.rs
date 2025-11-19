@@ -45,6 +45,19 @@ use xxhash_rust::xxh3::xxh3_64;
 ///     pub layout: Handle<TextureAtlasLayout>,
 /// }
 /// ```
+///
+/// Two enums will be generated base on declared actor and action:
+/// ```rust
+/// #[derive(Eq, PartialEq, Clone)]
+/// pub enum ActorMyAssets {
+///     Frog,
+/// }
+///
+/// #[derive(Eq, PartialEq, Clone)]
+/// pub enum ActionMyAssets {
+///     Idle,
+/// }
+/// ```
 pub trait View2dCollection {
     fn get_all(
         &self,
@@ -101,7 +114,7 @@ pub struct View2dActor {
     pub notify: Vec<Notification>,
 }
 
-/// The resource that stores every spritesheets. Organized by actor id (u32) and action id (u16)
+/// The resource that stores every spritesheets. Organized by actor id and action id.
 #[derive(Resource, Deref, DerefMut, Default)]
 pub struct ActorSpriteSheets(HashMap<u64, HashMap<u64, AngleSpriteSheets>>);
 
@@ -248,7 +261,7 @@ impl ActorSpriteSheets {
     }
 }
 
-/// Convert actor/action to number id
+/// Convert actor/action to number id using xxh3_64
 pub fn get_act_id(act: &str) -> u64 {
     xxh3_64(act.as_bytes())
 }

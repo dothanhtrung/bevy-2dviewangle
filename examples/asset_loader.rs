@@ -66,7 +66,7 @@ fn setup(mut commands: Commands, mut animation2d: ResMut<ActorSpriteSheets>, my_
         Transform::from_scale(Vec3::splat(10.)),
         // Specify actor for entity
         View2dActor {
-            actor: get_act_id("frog"),
+            actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
@@ -83,7 +83,7 @@ pub fn input(
         let mut direction = act.angle;
 
         // Update action id and direction of actor
-        let idle_id = get_act_id("idle");
+        let idle_id = ActionMyAssets::Idle.into();
         if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
             action = idle_id;
             direction = Angle::Left;

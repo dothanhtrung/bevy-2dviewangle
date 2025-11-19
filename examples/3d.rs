@@ -33,6 +33,8 @@ fn main() {
 }
 
 // Struct to load spritesheet
+// The derive macro will provide these two enums for actor and action id:
+//   `enum ActorMyAssets { Frog }` and `enum ActionMyAssets { Idle }`
 #[derive(View2dCollection, Default)]
 pub struct MyAssets {
     #[textureview(actor = "frog", action = "idle", angle = "front")]
@@ -76,9 +78,9 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let front_handle = animation2d
-        .get(&get_act_id("frog"))
+        .get(&ActorMyAssets::Frog.into())
         .unwrap()
-        .get(&get_act_id("idle"))
+        .get(&ActionMyAssets::Idle.into())
         .unwrap()
         .get(&Angle::Front)
         .unwrap();
@@ -126,7 +128,7 @@ fn setup(
         Transform::from_translation(Vec3::new(0., 0.85, 0.)),
         // Specify actor for entity
         View2dActor {
-            actor: get_act_id("frog"),
+            actor: ActorMyAssets::Frog.into(),
             animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
             ..default()
         },
@@ -143,7 +145,7 @@ pub fn input(
         let mut direction = act.angle;
 
         // Update action id and direction of actor
-        let idle_id = get_act_id("idle");
+        let idle_id = ActionMyAssets::Idle.into();
         if kb_input.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
             action = idle_id;
             direction = Angle::Left;

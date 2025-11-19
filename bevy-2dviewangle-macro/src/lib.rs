@@ -3,13 +3,24 @@
 use proc_macro::TokenStream;
 use std::collections::HashMap;
 
-use quote::quote;
+use quote::{
+    format_ident,
+    quote,
+};
 use syn::punctuated::Punctuated;
-use syn::{Data, Expr, ExprLit, Fields, Lit, Meta, Token};
+use syn::{
+    Data,
+    Expr,
+    ExprLit,
+    Fields,
+    Lit,
+    Meta,
+    Token,
+};
 use xxhash_rust::xxh3::xxh3_64;
 
 macro_rules! numberize {
-    ($key: expr, $map: expr, $value: expr) => {{
+    ($key: expr, $map: expr, $value: expr, $enum_into: expr, $enums: expr) => {{
         let num;
         let key_str = $key.value();
         if $map.contains_key(&key_str) {
@@ -17,6 +28,11 @@ macro_rules! numberize {
         } else {
             num = xxh3_64(key_str.as_bytes());
             $map.insert(key_str, num);
+
+            let enum_name = capitalize_first_letter(&$key.value());
+            let variant_name = syn::Ident::new(&enum_name, $key.span());
+            $enum_into.push(quote! {Self::#variant_name => #num});
+            $enums.push(quote! {#variant_name});
         }
         $value = quote! {Some(#num)};
     }};
@@ -45,6 +61,10 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
             let mut fields_info = Vec::new();
             let mut actor_map = HashMap::new();
             let mut action_map = HashMap::new();
+            let mut actor_nums = Vec::new();
+            let mut action_nums = Vec::new();
+            let mut actor_enums = Vec::new();
+            let mut action_enums = Vec::new();
 
             for field in fields.named.iter() {
                 let field_name = field.ident.as_ref().unwrap();
@@ -65,12 +85,12 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                         match attribute {
                             Meta::NameValue(named_value) if named_value.path.is_ident("actor") => {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    numberize!(key, actor_map, actor_value);
+                                    numberize!(key, actor_map, actor_value, actor_nums, actor_enums);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("action") => {
                                 if let Expr::Lit(ExprLit { lit: Lit::Str(key), .. }) = &named_value.value {
-                                    numberize!(key, action_map, action_value);
+                                    numberize!(key, action_map, action_value, action_nums, action_enums);
                                 }
                             }
                             Meta::NameValue(named_value) if named_value.path.is_ident("angle") => {
@@ -108,6 +128,8 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                 fields_info.push(field_info);
             }
 
+            let actor_enum_name = format_ident!("Actor{}", struct_name);
+            let action_enum_name = format_ident!("Action{}", struct_name);
             let expanded = quote! {
                 use bevy_2dviewangle::*;
 
@@ -121,6 +143,32 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                         Option<&Handle<TextureAtlasLayout>>,
                     )> {
                         vec![#( #fields_info ),*]
+                    }
+                }
+
+                #[derive(Eq, PartialEq, Clone)]
+                pub enum #actor_enum_name {
+                    #( #actor_enums ),*
+                }
+
+                impl Into<u64> for #actor_enum_name {
+                    fn into(self) -> u64 {
+                        match self {
+                            #( #actor_nums ),*
+                        }
+                    }
+                }
+
+                #[derive(Eq, PartialEq, Clone)]
+                pub enum #action_enum_name {
+                    #( #action_enums ),*
+                }
+
+                impl Into<u64> for #action_enum_name {
+                    fn into(self) -> u64 {
+                        match self {
+                            #( #action_nums ),*
+                        }
                     }
                 }
             };
