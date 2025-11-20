@@ -15,9 +15,6 @@ use bevy::prelude::{
 
 use crate::component::*;
 
-const ACTION_ANY: u64 = 0;
-const ACTOR_ANY: u64 = 0;
-
 /// Check on `ViewChanged` event and change to corresponding spritesheet.
 /// If spritesheet for an angle does not exist, it will try to flip the spritesheet of the opposite angle.
 /// If the opposite is not available, spritesheet will not change.
@@ -30,11 +27,12 @@ pub(crate) fn view_changed_event(
         if let Ok((mut view, mut sprite)) = sprites.get_mut(event.entity) {
             let mut action = view.action;
             let mut actor = view.actor;
+            let any = get_act_id("any");
 
             let mut viewsprite = None;
-            for _actor in [&view.actor, &ACTOR_ANY] {
+            for _actor in [&view.actor, &any] {
                 if let Some(actor_val) = animation2d.get(_actor) {
-                    for _action in [&view.action, &ACTION_ANY] {
+                    for _action in [&view.action, &any] {
                         if let Some(action_val) = actor_val.get(_action) {
                             viewsprite = action_val.get(&view.angle);
                             actor = *_actor;
