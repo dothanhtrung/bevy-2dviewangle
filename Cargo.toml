@@ -23,4 +23,4 @@ bevy_asset_loader = { version = "0.24.0-rc", features = ["2d"] }
 
 [features]
 default = ["serialize"]
-serialize = ["serde"]
+serialize = ["serde", "bevy/serialize"]
