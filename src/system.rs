@@ -95,39 +95,48 @@ fn get_opposite_view(texture: &AngleSpriteSheets, direction: Angle) -> Option<&S
     }
 }
 
-pub(crate) fn dynamic_actor_animate(
-    mut commands: Commands,
+pub(crate) fn animated_timer(
     time: Res<Time>,
+    mut query: Query<(&mut View2dActor, Entity)>,
+    mut event: MessageWriter<NextFrame>,
+) {
+    for (mut actor, entity) in &mut query {
+        if let Some(ref mut animation_timer) = actor.animation_timer {
+            animation_timer.tick(time.delta());
+            if animation_timer.just_finished() {
+                event.write(NextFrame { entity });
+            }
+        }
+    }
+}
+
+pub(crate) fn animating(
+    mut commands: Commands,
     atlases: Res<Assets<TextureAtlasLayout>>,
     mut query: Query<(&mut View2dActor, &mut Sprite, Entity)>,
     mut event: MessageWriter<ViewChanged>,
 ) {
     for (mut actor, mut sprite, entity) in &mut query {
-        if let Some(ref mut animation_timer) = actor.animation_timer {
-            animation_timer.tick(time.delta());
-            if animation_timer.just_finished() {
-                if let Some(atlas) = &mut sprite.texture_atlas {
-                    if let Some(layout) = atlases.get(&atlas.layout) {
-                        for notify in &actor.notify {
-                            match *notify {
-                                Notification::LastFrame => {
-                                    if atlas.index == layout.textures.len() - 1 {
-                                        commands.trigger(LastFrame { entity });
-                                    }
-                                }
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            if let Some(layout) = atlases.get(&atlas.layout) {
+                for notify in &actor.notify {
+                    match *notify {
+                        Notification::LastFrame => {
+                            if atlas.index == layout.textures.len() - 1 {
+                                commands.trigger(LastFrame { entity });
                             }
                         }
-
-                        if atlas.index == layout.textures.len() - 1 {
-                            if let Some(next_action) = actor.next_action.first() {
-                                actor.action = *next_action;
-                                event.write(ViewChanged { entity });
-                                actor.next_action.remove(0);
-                            }
-                        }
-                        atlas.index = (atlas.index + 1) % layout.textures.len();
                     }
                 }
+
+                if atlas.index == layout.textures.len() - 1 {
+                    if let Some(next_action) = actor.next_action.first() {
+                        actor.action = *next_action;
+                        event.write(ViewChanged { entity });
+                        actor.next_action.remove(0);
+                    }
+                }
+                atlas.index = (atlas.index + 1) % layout.textures.len();
             }
         }
     }

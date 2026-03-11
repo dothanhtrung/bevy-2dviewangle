@@ -96,7 +96,8 @@ macro_rules! plugin_systems {
     () => {
         (
             view_changed_event.run_if(on_message::<ViewChanged>),
-            dynamic_actor_animate,
+            animated_timer,
+            animating.run_if(on_message::<NextFrame>),
         )
     };
 }

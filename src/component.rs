@@ -93,7 +93,7 @@ pub struct SpriteSheet {
     pub image: Option<Handle<Image>>,
 }
 
-/// Map of Angle and its SpriteSheet  
+/// Map of Angle and its SpriteSheet
 #[derive(Default, Deref, DerefMut)]
 pub struct AngleSpriteSheets(HashMap<Angle, SpriteSheet>);
 
@@ -150,6 +150,12 @@ pub struct ViewChanged {
 #[derive(EntityEvent)]
 pub struct LastFrame {
     pub entity: Entity,
+}
+
+/// Sent this event to manually change to next frame
+#[derive(Message, EntityEvent)]
+pub struct NextFrame {
+    pub entity: Entity
 }
 
 impl AngleSpriteSheets {
