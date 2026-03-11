@@ -1,9 +1,17 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_2dviewangle_macro::View2dCollection;
-use bevy_sprite3d::{Sprite3d, Sprite3dPlugin};
+use bevy_sprite3d::{
+    Sprite3d,
+    Sprite3dPlugin,
+};
 
-use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginAnyState, View2dActor};
+use bevy_2dviewangle::{
+    ActorSpriteSheets,
+    Angle,
+    View2DAnglePluginAnyState,
+    View2dActor,
+};
 
 #[derive(States, Hash, Clone, PartialEq, Eq, Debug, Default)]
 enum GameState {

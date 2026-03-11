@@ -1,6 +1,12 @@
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_2dviewangle::{ActorSpriteSheets, Angle, View2DAnglePluginAnyState, View2dActor, ViewChanged};
+use bevy_2dviewangle::{
+    ActorSpriteSheets,
+    Angle,
+    View2DAnglePluginAnyState,
+    View2dActor,
+    ViewChanged,
+};
 use bevy_2dviewangle_macro::View2dCollection;
 
 fn main() {
