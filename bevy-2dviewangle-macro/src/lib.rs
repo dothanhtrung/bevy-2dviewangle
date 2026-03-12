@@ -1,4 +1,3 @@
-// Copyright 2024 Trung Do <dothanhtrung@pm.me>
 
 use proc_macro::TokenStream;
 use std::collections::HashMap;

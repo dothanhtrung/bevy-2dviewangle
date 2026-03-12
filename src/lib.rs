@@ -1,4 +1,3 @@
-// Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 //! Bevy plugin to easier to manage and switch texture base on view angles.
 //!

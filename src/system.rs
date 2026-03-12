@@ -1,4 +1,3 @@
-// Copyright 2024,2025 Trung Do <dothanhtrung@pm.me>
 
 use bevy::asset::Assets;
 use bevy::prelude::{
