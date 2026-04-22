@@ -32,15 +32,15 @@ fn main() {
 #[derive(View2dCollection, Default)]
 pub struct MyAssets {
     #[textureview(actor = "frog", action = "idle", angle = "front")]
-    pub idle_front: Handle<Image>,
+    pub frog_idle_front: Handle<Image>,
 
     // If not specify actor/action, the previous value will be used
     #[textureview(angle = "back")]
-    pub idle_back: Handle<Image>,
+    pub frog_idle_back: Handle<Image>,
 
     // If the angle "right" is not defined, it will be flipped base on the angle "left" image
     #[textureview(angle = "left")]
-    pub idle_left: Handle<Image>,
+    pub frog_idle_left: Handle<Image>,
 
     // If angle is any, other angle which has not been defined will use this value
     #[textureview(angle = "any")]
@@ -54,12 +54,11 @@ fn setup(
     mut animation2d: ResMut<ActorSpriteSheets>,
 ) {
     let layout = TextureAtlasLayout::from_grid(UVec2::new(16, 16), 1, 3, None, None);
-    let my_assets = MyAssets {
-        idle_front: asset_server.load("frog_idle_front.png"),
-        idle_back: asset_server.load("frog_idle_back.png"),
-        idle_left: asset_server.load("frog_idle_left.png"),
-        layout: texture_atlases.add(layout),
-    };
+    let mut my_assets = MyAssets::default();
+    // Convenience function to load image asset by the field name: "{asset_dir}/{field_name}.{extension}
+    //   load_assets(&mut self, asset_dir: &str, extension: &str, asset_server: &AssetServer)
+    my_assets.load_assets(".", "png", &asset_server);
+    my_assets.layout = texture_atlases.add(layout);
 
     // Load into collection
     animation2d.load_asset_loader(&my_assets);
@@ -67,7 +66,7 @@ fn setup(
     commands.spawn(Camera2d);
     commands.spawn((
         Sprite {
-            image: my_assets.idle_front.clone(),
+            image: my_assets.frog_idle_front.clone(),
             texture_atlas: Some(TextureAtlas::from(my_assets.layout.clone())),
             ..default()
         },

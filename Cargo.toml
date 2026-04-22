@@ -12,14 +12,14 @@ categories = ["game-development"]
 
 [dependencies]
 bevy = { version = ">=0.17", features = ["bevy_asset", "bevy_sprite", "bevy_state"], default-features = false }
-bevy_2dviewangle_macro = { version = "0.6", path = "./bevy-2dviewangle-macro" }
+bevy_2dviewangle_macro = { version = ">=0.6", path = "./bevy-2dviewangle-macro" }
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]
 bevy = { version = ">=0.17", features = ["dynamic_linking"] }
 bevy_sprite3d = { version = ">=7.0", git = "https://github.com/trung1-dothanh/bevy_sprite3d.git", branch = "main" }
-bevy_asset_loader = { version = "0.25", features = ["2d"] }
+bevy_asset_loader = { version = ">=0.26", features = ["2d"] }
 
 [features]
 default = ["serialize"]

@@ -1,4 +1,3 @@
-
 use proc_macro::TokenStream;
 use std::collections::HashMap;
 
@@ -64,6 +63,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
             let mut action_nums = Vec::new();
             let mut actor_enums = Vec::new();
             let mut action_enums = Vec::new();
+            let mut field_names = Vec::new();
 
             for field in fields.named.iter() {
                 let field_name = field.ident.as_ref().unwrap();
@@ -106,6 +106,7 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
 
                 match &field.ty {
                     ty if quote!(#ty).to_string() == "Handle < Image >" => {
+                        field_names.push(field_name);
                         image_value = quote! {Some(&self.#field_name)}
                     }
                     ty if quote!(#ty).to_string() == "Handle < TextureAtlasLayout >" => {
@@ -168,6 +169,12 @@ fn impl_actors_textures(ast: syn::DeriveInput) -> Result<proc_macro2::TokenStrea
                         match self {
                             #( #action_nums ),*
                         }
+                    }
+                }
+
+                impl #struct_name {
+                    pub fn load_assets(&mut self, asset_dir: &str, extension: &str, asset_server: &AssetServer) {
+                        #( self.#field_names = asset_server.load(format!("{}/{}.{}", asset_dir, stringify!(#field_names), extension)));*
                     }
                 }
             };
