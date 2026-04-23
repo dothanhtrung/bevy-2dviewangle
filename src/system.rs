@@ -49,14 +49,26 @@ pub(crate) fn view_changed_event(
 
             // TODO: Clean code
             if viewsprite.is_none() {
-                viewsprite = get_opposite_view(&animation2d[&actor][&action], view.angle);
+                let Some(actor_val) = animation2d.get(&actor) else {
+                    continue;
+                };
+                let Some(action_val) = actor_val.get(&action) else {
+                    continue;
+                };
+                viewsprite = get_opposite_view(action_val, view.angle);
                 if viewsprite.is_some() {
                     sprite.flip_x = true;
                     view.flipped = true;
                 }
             }
             if viewsprite.is_none() {
-                viewsprite = animation2d[&actor][&action].get(&Angle::Any);
+                let Some(actor_val) = animation2d.get(&actor) else {
+                    continue;
+                };
+                let Some(action_val) = actor_val.get(&action) else {
+                    continue;
+                };
+                viewsprite = action_val.get(&Angle::Any);
                 if viewsprite.is_none() {
                     viewsprite = get_opposite_view(&animation2d[&actor][&action], Angle::Any);
                     if viewsprite.is_some() {
