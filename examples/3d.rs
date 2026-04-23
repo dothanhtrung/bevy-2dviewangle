@@ -13,13 +13,6 @@ use bevy_2dviewangle::{
     View2dActor,
 };
 
-#[derive(States, Hash, Clone, PartialEq, Eq, Debug, Default)]
-enum GameState {
-    #[default]
-    Loading,
-    Ready,
-}
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
@@ -33,10 +26,8 @@ fn main() {
         // Add the plugin
         .add_plugins(View2DAnglePluginAnyState::any())
         .add_plugins(Sprite3dPlugin)
-        .init_state::<GameState>()
-        .add_systems(Startup, load_texture)
-        .add_systems(Update, setup.run_if(in_state(GameState::Loading)))
-        .add_systems(Update, input.run_if(in_state(GameState::Ready)))
+        .add_systems(Startup, (load_texture, setup).chain())
+        .add_systems(Update, input)
         .run();
 }
 
@@ -80,12 +71,10 @@ fn load_texture(
 
 fn setup(
     mut commands: Commands,
-    mut next_state: ResMut<NextState<GameState>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut view_changed: MessageWriter<ViewChanged>,
 ) {
-    next_state.set(GameState::Ready);
-
     // light
     commands.spawn((
         PointLight {
@@ -110,19 +99,23 @@ fn setup(
     ));
 
     // Spawn frog
-    commands.spawn((
-        Sprite3d {
-            pixels_per_metre: 8.,
-            ..default()
-        },
-        Transform::from_translation(Vec3::new(0., 0.85, 0.)),
-        // Specify actor for entity
-        View2dActor {
-            actor: ActorMyAssets::Frog.into(),
-            animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
-            ..default()
-        },
-    ));
+    let entity = commands
+        .spawn((
+            Sprite3d {
+                pixels_per_metre: 8.,
+                ..default()
+            },
+            Transform::from_translation(Vec3::new(0., 0.85, 0.)),
+            // Specify actor for entity
+            View2dActor {
+                actor: ActorMyAssets::Frog.into(),
+                animation_timer: Some(Timer::from_seconds(0.25, TimerMode::Repeating)),
+                ..default()
+            },
+        ))
+        .id();
+
+    view_changed.write(ViewChanged { entity });
 }
 
 pub fn input(
