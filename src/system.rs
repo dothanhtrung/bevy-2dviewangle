@@ -1,5 +1,5 @@
-
 use bevy::asset::Assets;
+use bevy::image::TextureAtlas;
 use bevy::prelude::{
     Commands,
     Entity,
@@ -76,6 +76,11 @@ pub(crate) fn view_changed_event(
                     if let Some(view_atlas) = &viewsprite.layout {
                         atlas.layout = view_atlas.clone();
                     }
+                } else if let Some(next_layout) = viewsprite.layout.clone() {
+                    sprite.texture_atlas = Some(TextureAtlas {
+                        layout: next_layout,
+                        index: 0,
+                    });
                 }
             }
         }
