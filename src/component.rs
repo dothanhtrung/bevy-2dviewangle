@@ -1,7 +1,5 @@
-
-use std::collections::HashMap;
-
 use bevy::asset::Handle;
+use bevy::platform::collections::HashMap;
 use bevy::prelude::{
     Component,
     Deref,

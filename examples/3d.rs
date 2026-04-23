@@ -80,19 +80,10 @@ fn load_texture(
 
 fn setup(
     mut commands: Commands,
-    animation2d: Res<ActorSpriteSheets>,
     mut next_state: ResMut<NextState<GameState>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let front_handle = animation2d
-        .get(&ActorMyAssets::Frog.into())
-        .unwrap()
-        .get(&ActionMyAssets::Idle.into())
-        .unwrap()
-        .get(&Angle::Front)
-        .unwrap();
-
     next_state.set(GameState::Ready);
 
     // light
@@ -119,18 +110,9 @@ fn setup(
     ));
 
     // Spawn frog
-    let texture_atlas = TextureAtlas {
-        layout: front_handle.layout.as_ref().unwrap().clone(),
-        index: 0,
-    };
     commands.spawn((
         Sprite3d {
             pixels_per_metre: 8.,
-            ..default()
-        },
-        Sprite {
-            image: front_handle.image.as_ref().unwrap().clone(),
-            texture_atlas: Some(texture_atlas),
             ..default()
         },
         Transform::from_translation(Vec3::new(0., 0.85, 0.)),

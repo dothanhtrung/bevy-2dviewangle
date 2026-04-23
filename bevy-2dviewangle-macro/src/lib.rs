@@ -1,6 +1,5 @@
 use proc_macro::TokenStream;
 use std::collections::HashMap;
-
 use quote::{
     format_ident,
     quote,
