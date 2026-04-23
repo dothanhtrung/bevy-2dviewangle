@@ -14,6 +14,7 @@ use bevy::prelude::{
     TextureAtlasLayout,
     Timer,
 };
+use bevy::sprite::Sprite;
 pub use bevy_2dviewangle_macro::View2dCollection;
 use xxhash_rust::xxh3::xxh3_64;
 
@@ -103,6 +104,7 @@ pub enum Notification {
 #[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Component, Reflect, Default, Clone)]
 #[reflect(Component)]
+#[require(Sprite)]
 pub struct View2dActor {
     pub angle: Angle,
     pub action: u64,
