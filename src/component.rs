@@ -154,7 +154,7 @@ pub struct LastFrame {
 /// Sent this event to manually change to next frame
 #[derive(Message, EntityEvent)]
 pub struct NextFrame {
-    pub entity: Entity
+    pub entity: Entity,
 }
 
 impl AngleSpriteSheets {

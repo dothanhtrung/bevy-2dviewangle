@@ -75,15 +75,17 @@ pub(crate) fn view_changed_event(
                         sprite.flip_x = true;
                         view.flipped = true;
                     } else {
-                        return;
+                        continue;
                     }
                 }
             }
 
-            let viewsprite = viewsprite.unwrap();
+            let Some(viewsprite) = viewsprite else {
+                continue;
+            };
 
-            if viewsprite.image.is_some() {
-                sprite.image = viewsprite.image.as_ref().unwrap().clone();
+            if let Some(sprite_image) = viewsprite.image.as_ref() {
+                sprite.image = sprite_image.clone();
                 if let Some(atlas) = &mut sprite.texture_atlas {
                     if let Some(view_atlas) = &viewsprite.layout {
                         atlas.layout = view_atlas.clone();

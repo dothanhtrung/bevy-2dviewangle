@@ -1,4 +1,3 @@
-
 //! Bevy plugin to easier to manage and switch texture base on view angles.
 //!
 //!
