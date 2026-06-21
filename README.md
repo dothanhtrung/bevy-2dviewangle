@@ -5,7 +5,7 @@ bevy_2dviewangle
 
 [![crates.io](https://img.shields.io/crates/v/bevy_2dviewangle)](https://crates.io/crates/bevy_2dviewangle)
 [![docs.rs](https://docs.rs/bevy_2dviewangle/badge.svg)](https://docs.rs/bevy_2dviewangle)
-[![dependency status](https://deps.rs/repo/gitlab/245project/bevy-plugin/bevy-2dviewangle/status.svg)](https://deps.rs/repo/gitlab/245project/bevy-plugin/bevy-2dviewangle)
+[![dependency status](https://deps.rs/crate/bevy_2dviewangle/latest/status.svg)](https://deps.rs/crate/bevy_2dviewangle/latest)
 [![pipeline status](https://gitlab.com/245project/bevy-plugin/bevy-2dviewangle/badges/master/pipeline.svg)](https://gitlab.com/245project/bevy-plugin/bevy-2dviewangle/-/commits/master)
 
 [![Gitlab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/245project/bevy-plugin/bevy-2dviewangle)
