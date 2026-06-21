@@ -94,10 +94,19 @@ Compatible Bevy Versions
 
 | bevy      | bevy_2dviewangle |
 |-----------|------------------|
-| 0.18-0.19 | 0.12             |
+| 0.19      | 0.13             |
+| 0.18      | 0.12             |
 | 0.17      | 0.11-0.12        |
 | 0.16      | 0.10             |
 | 0.15      | 0.9              |
 | 0.14      | 0.7-0.8          |
 | 0.13      | 0.2-0.6          |
 | 0.12      | 0.1              |
+
+---------
+
+<div align="center">
+
+![git_bevy-2dviewangle](https://count.getloli.com/@git_bevy-2dviewangle?name=git_bevy-2dviewangle&theme=random&padding=10&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
+
+</div>
