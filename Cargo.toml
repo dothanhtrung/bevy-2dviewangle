@@ -1,8 +1,8 @@
 [package]
 name = "bevy_2dviewangle"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
-edition = "2021"
+edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://gitlab.com/245project/bevy-plugin/bevy-2dviewangle"
 keywords = ["bevy"]

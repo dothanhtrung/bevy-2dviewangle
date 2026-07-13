@@ -152,7 +152,7 @@ pub struct LastFrame {
 }
 
 /// Sent this event to manually change to next frame
-#[derive(Message, EntityEvent)]
+#[derive(EntityEvent)]
 pub struct NextFrame {
     pub entity: Entity,
 }

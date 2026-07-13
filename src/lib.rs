@@ -1,102 +1,27 @@
-//! Bevy plugin to easier to manage and switch texture base on view angles.
-//!
-//!
-//! ## Quickstart
-//!
-//! ```rust
-//! // Struct to store sprite sheet
-//! use bevy::prelude::*;
-//! use bevy_2dviewangle::{Angle, View2dActor, ViewChanged};
-//! use bevy_2dviewangle::View2dCollection;
-//!
-//! #[derive(View2dCollection, Default)]
-//! struct MyAssets {
-//!     #[textureview(actor = "player", action = "idle", angle = "front")]
-//!     pub idle_front: Handle<Image>,
-//!
-//!     // If not specify actor/action, the previous value will be used
-//!     #[textureview(angle = "back")]
-//!     pub idle_back: Handle<Image>,
-//!
-//!     // If the angle "right" is not defined, it will be flipped base on the angle "left" image
-//!     #[textureview(angle = "left")]
-//!     pub idle_left: Handle<Image>,
-//!
-//!     // If angle is any, other angle which has not been defined will use this value
-//!     #[textureview(angle = "any")]
-//!     pub idle_any_layout: Handle<TextureAtlasLayout>,
-//! }
-//!
-//! // Change the sprite sheet by sending event
-//! fn switch_sprite(
-//!     mut actors: Query<(&mut View2dActor, Entity)>,
-//!     mut action_event: MessageWriter<ViewChanged>,
-//! ) {
-//!     for (mut act, e) in actors.iter_mut() {
-//!         act.action = ActionMyAssets::Idle.into();
-//!         act.angle = Angle::Right;
-//!         action_event.write(ViewChanged { entity: e });
-//!     }
-//! }
-//! ```
-//!
-//! Please see in [examples](./examples) for more detail.
-//!
-//! This plugin can work with [bevy_asset_loader](https://crates.io/crates/bevy_asset_loader) too:
-//!
-//! ```rust
-//! use bevy::prelude::{Handle, Image, Resource, TextureAtlasLayout};
-//! use bevy_asset_loader::prelude::AssetCollection;
-//! use bevy_2dviewangle::View2dCollection;
-//!
-//! #[derive(AssetCollection, View2dCollection, Resource)]
-//! pub struct MyAssets {
-//!     #[asset(path = "frog_idle_front.png")]
-//!     #[textureview(actor = "frog", action = "idle", angle = "front")]
-//!     pub idle_front: Handle<Image>,
-//!
-//!     #[asset(path = "frog_idle_back.png")]
-//!     #[textureview(angle = "back")]
-//!     pub idle_back: Handle<Image>,
-//!
-//!     #[asset(path = "frog_idle_left.png")]
-//!     #[textureview(angle = "left")]
-//!     pub idle_left: Handle<Image>,
-//!
-//!     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 1, rows = 3))]
-//!     #[textureview(angle = "any")]
-//!     pub front_layout: Handle<TextureAtlasLayout>,
-//! }
-//! ```
+#![doc=include_str!("../README.md")]
 
-use bevy::{
-    app::{
-        App,
-        Plugin,
-        Update,
-    },
-    prelude::on_message,
+pub mod component;
+pub mod system;
+
+pub use crate::component::*;
+use crate::system::{
+    animated_timer,
+    animating,
+    view_changed_event,
 };
-
 use bevy::prelude::{
-    in_state,
+    App,
     IntoScheduleConfigs,
+    Plugin,
     States,
+    Update,
+    in_state,
+    on_message,
 };
-
-pub use component::*;
-use system::*;
-
-mod component;
-mod system;
 
 macro_rules! plugin_systems {
     () => {
-        (
-            view_changed_event.run_if(on_message::<ViewChanged>),
-            animated_timer,
-            animating.run_if(on_message::<NextFrame>),
-        )
+        (view_changed_event.run_if(on_message::<ViewChanged>), animated_timer)
     };
 }
 
@@ -118,8 +43,8 @@ where
     fn build(&self, app: &mut App) {
         app.register_type::<View2dActor>()
             .add_message::<ViewChanged>()
-            .add_message::<NextFrame>()
-            .insert_resource(ActorSpriteSheets::default());
+            .insert_resource(ActorSpriteSheets::default())
+            .add_observer(animating);
         if self.states.is_empty() {
             app.add_systems(Update, plugin_systems!());
         } else {

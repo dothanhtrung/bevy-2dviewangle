@@ -1,4 +1,17 @@
+use crate::component::{
+    ActorSpriteSheets,
+    Angle,
+    AngleSpriteSheets,
+    LastFrame,
+    NextFrame,
+    Notification,
+    SpriteSheet,
+    View2dActor,
+    ViewChanged,
+    get_act_id,
+};
 use bevy::asset::Assets;
+use bevy::ecs::observer::On;
 use bevy::image::TextureAtlas;
 use bevy::prelude::{
     Commands,
@@ -11,8 +24,6 @@ use bevy::prelude::{
     TextureAtlasLayout,
     Time,
 };
-
-use crate::component::*;
 
 /// Check on `ViewChanged` event and change to corresponding spritesheet.
 /// If spritesheet for an angle does not exist, it will try to flip the spritesheet of the opposite angle.
@@ -113,49 +124,46 @@ fn get_opposite_view(texture: &AngleSpriteSheets, direction: Angle) -> Option<&S
     }
 }
 
-pub(crate) fn animated_timer(
-    time: Res<Time>,
-    mut query: Query<(&mut View2dActor, Entity)>,
-    mut event: MessageWriter<NextFrame>,
-) {
+pub(crate) fn animated_timer(time: Res<Time>, mut query: Query<(&mut View2dActor, Entity)>, mut commands: Commands) {
     for (mut actor, entity) in &mut query {
         if let Some(ref mut animation_timer) = actor.animation_timer {
             animation_timer.tick(time.delta());
             if animation_timer.just_finished() {
-                event.write(NextFrame { entity });
+                commands.trigger(NextFrame { entity });
             }
         }
     }
 }
 
 pub(crate) fn animating(
+    trigger: On<NextFrame>,
     mut commands: Commands,
     atlases: Res<Assets<TextureAtlasLayout>>,
-    mut query: Query<(&mut View2dActor, &mut Sprite, Entity)>,
+    mut query: Query<(&mut View2dActor, &mut Sprite)>,
     mut event: MessageWriter<ViewChanged>,
 ) {
-    for (mut actor, mut sprite, entity) in &mut query {
-        if let Some(atlas) = &mut sprite.texture_atlas {
-            if let Some(layout) = atlases.get(&atlas.layout) {
-                for notify in &actor.notify {
-                    match *notify {
-                        Notification::LastFrame => {
-                            if atlas.index == layout.textures.len() - 1 {
-                                commands.trigger(LastFrame { entity });
-                            }
-                        }
+    if let Ok((mut actor, mut sprite)) = query.get_mut(trigger.entity)
+        && let Some(atlas) = &mut sprite.texture_atlas
+        && let Some(layout) = atlases.get(&atlas.layout)
+    {
+        for notify in &actor.notify {
+            match *notify {
+                Notification::LastFrame => {
+                    if atlas.index == layout.textures.len() - 1 {
+                        commands.trigger(LastFrame { entity: trigger.entity });
                     }
                 }
-
-                if atlas.index == layout.textures.len() - 1 {
-                    if let Some(next_action) = actor.next_action.first() {
-                        actor.action = *next_action;
-                        event.write(ViewChanged { entity });
-                        actor.next_action.remove(0);
-                    }
-                }
-                atlas.index = (atlas.index + 1) % layout.textures.len();
             }
         }
+
+        if atlas.index == layout.textures.len() - 1
+            && let Some(next_action) = actor.next_action.first()
+        {
+            actor.action = *next_action;
+            event.write(ViewChanged { entity: trigger.entity });
+            actor.next_action.remove(0);
+        }
+
+        atlas.index = (atlas.index + 1) % layout.textures.len();
     }
 }
